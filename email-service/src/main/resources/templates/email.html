@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.0/css/bootstrap.min.css" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title th:text="${messageSubject}">Default Subject</title>
+    <style>
+        /* Custom styling for better centering and borders */
+        .custom-card {
+            width: 50%; /* Adjust the width as needed */
+            /* Center the card horizontally */
+            /* Add top margin for spacing */
+            margin: 50px auto auto;
+        }
+        .custom-card-body {
+            border-top: 1px solid #007BFF; /* Border between header and body */
+            padding-top: 10px; /* Add padding for spacing */
+            text-align: center; /* Center the text in the body */
+        }
+    </style>
+</head>
+<body>
+
+<!-- Bootstrap Card with Custom Styling -->
+<div class="card border-primary custom-card">
+    <div class="card-body custom-card-body">
+
+        <!-- Email Content -->
+        <h1 class="card-title" th:text="${messageSubject}">Default Subject</h1>
+        <p class="card-text" th:text="${messageBody}">Default Body</p>
+
+    </div>
+</div>
+
+
+<!-- Bootstrap JS -->
+<script src="/webjars/bootstrap/5.3.0/js/bootstrap.min.js"></script>
+</body>
+</html>

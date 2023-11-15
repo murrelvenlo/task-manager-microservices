@@ -1,0 +1,61 @@
+server:
+  port: 8083
+
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud.gateway: TRACE
+    org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator: INFO
+    reactor.netty: TRACE
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENTID}
+            client-secret: ${GOOGLE_CLIENTSECRET}
+            scope: openid,profile,email
+        resourceserver:
+          jwt:
+            issuer-uri: https://accounts.google.com
+            jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs
+  cloud:
+    gateway:
+      routes:
+        - id: task-service-create
+          uri: http://${TASK_SERVICE_BASEURL:localhost:8080}
+          predicates:
+            - Path=/api/task/add/**
+            - Method=POST
+          filters:
+            - SetPath=/api/task/add/{userCode}
+        - id: task-service-all
+          uri: http://${TASK_SERVICE_BASEURL:localhost:8080}
+          predicates:
+            - Path=/api/task/all
+            - Method=GET
+          filters:
+            - SetPath=/api/task/all
+        - id: task-service-update
+          uri: http://${TASK_SERVICE_BASEURL:localhost:8080}
+          predicates:
+            - Path=/api/task/update/**
+            - Method=PUT
+          filters:
+            - SetPath=/api/task/update/{taskCode}/{userCode}
+        - id: task-service-delete
+          uri: http://${TASK_SERVICE_BASEURL:localhost:8080}
+          predicates:
+            - Path=/api/task/delete/**
+            - Method=DELETE
+          filters:
+            - SetPath=/api/task/delete/{taskId}
+        - id: task-service-get
+          uri: http://${TASK_SERVICE_BASEURL:localhost:8080}
+          predicates:
+            - Path=/api/task/get/**
+            - Method=GET
+          filters:
+            - SetPath=/api/task/get/{taskId}
