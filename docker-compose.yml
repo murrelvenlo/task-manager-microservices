@@ -56,7 +56,7 @@ services:
       MYSQL_DB_USERNAME: admin
       MYSQL_DB_PASSWORD: sql
       MYSQL_DB_HOST: mysql-mail
-      MYSQL_DB_PORT: 2200
+      MYSQL_DB_PORT: 2201
 
   task-service:
     depends_on:
