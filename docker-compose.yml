@@ -8,6 +8,15 @@ services:
     volumes:
       - mongo_task_data:/data/db
 
+  mysql-mail:
+    image: mysql:latest
+    ports:
+      - 3307:3306  # Change the host port to 3307
+    volumes:
+      - mysql_mail_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: sql
+
   mysql-user:
     image: mysql:latest
     ports:
@@ -17,14 +26,19 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: sql
 
-  mysql-mail:
-    image: mysql:latest
+  email-service:
+    depends_on:
+      - mysql-mail
+    image: venlomj/email-service
     ports:
-      - 3307:3306  # Change the host port to 3307
-    volumes:
-      - mysql_mail_data:/var/lib/mysql
+      - 8082:8082
+    links:
+      - mysql-mail
     environment:
-      MYSQL_ROOT_PASSWORD: sql
+      MYSQL_DB_USERNAME: root
+      MYSQL_DB_PASSWORD: abc123
+      MYSQL_DB_HOST: mysql-mail
+      MYSQL_DB_PORT: 3306
 
   user-service:
     depends_on:
@@ -39,28 +53,15 @@ services:
     environment:
       TASK_SERVICE_BASEURL: task-service:8080
       MAIL_SERVICE_BASEURL: mail-service:8082
-      MYSQL_DB_USERNAME: admin
-      MYSQL_DB_PASSWORD: sql
+      MYSQL_DB_USERNAME: root
+      MYSQL_DB_PASSWORD: abc123
       MYSQL_DB_HOST: mysql-user
-      MYSQL_DB_PORT: 3306
-
-  email-service:
-    depends_on:
-      - mysql-mail
-    image: venlomj/email-service
-    ports:
-      - 8082:8082
-    links:
-      - mysql-mail
-    environment:
-      MYSQL_DB_USERNAME: admin
-      MYSQL_DB_PASSWORD: sql
-      MYSQL_DB_HOST: mysql-mail
       MYSQL_DB_PORT: 3307
 
   task-service:
     depends_on:
       - mongo-tasks
+      - email-service
     image: venlomj/task-service
     ports:
       - 8080:8080
