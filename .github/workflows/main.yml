@@ -17,7 +17,7 @@ jobs:
           cache: maven
           distribution: adopt
 
-      - name: Build, test and package project
+      - name: Build and package project
         working-directory: ./task-service
         run: mvn package -B
 
@@ -43,7 +43,7 @@ jobs:
           cache: maven
           distribution: adopt
 
-      - name: Build, test and package project
+      - name: Build and package project
         working-directory: ./email-service
         run: mvn package -B
 
@@ -95,7 +95,7 @@ jobs:
           cache: maven
           distribution: adopt
 
-      - name: Build, test and package project
+      - name: Build and package project
         working-directory: ./api-gateway
         run: mvn package -B -DskipTests
 
