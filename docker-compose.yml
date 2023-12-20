@@ -11,7 +11,7 @@ services:
   mysql-user:
     image: mysql:latest
     ports:
-      - 2201:3306
+      - 2200:3306
     volumes:
       - mysql_user_data:/var/lib/mysql
     environment:
@@ -20,7 +20,7 @@ services:
   mysql-mail:
     image: mysql:latest
     ports:
-      - 3308:3306
+      - 2200:3306
     volumes:
       - mysql_mail_data:/var/lib/mysql
     environment:
@@ -42,7 +42,7 @@ services:
       MYSQL_DB_USERNAME: admin
       MYSQL_DB_PASSWORD: sql
       MYSQL_DB_HOST: mysql-user
-      MYSQL_DB_PORT: 2201
+      MYSQL_DB_PORT: 2200
 
   email-service:
     depends_on:
@@ -56,7 +56,7 @@ services:
       MYSQL_DB_USERNAME: admin
       MYSQL_DB_PASSWORD: sql
       MYSQL_DB_HOST: mysql-mail
-      MYSQL_DB_PORT: 3308
+      MYSQL_DB_PORT: 2200
 
   task-service:
     depends_on:
