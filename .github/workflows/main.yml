@@ -43,6 +43,12 @@ jobs:
           cache: maven
           distribution: adopt
 
+      - name: Build Docker Image
+        run: docker build -t venlomj/email-service .
+
+      - name: Show Contents of target Directory
+        run: ls -R target
+
       - name: Build and package project
         working-directory: ./email-service
         run: mvn package -B
@@ -68,6 +74,12 @@ jobs:
           java-version: 17
           cache: maven
           distribution: adopt
+
+      - name: Build Docker Image
+        run: docker build -t venlomj/user-service .
+
+      - name: Show Contents of target Directory
+        run: ls -R target
 
       - name: Build, test and package project
         working-directory: ./user-service

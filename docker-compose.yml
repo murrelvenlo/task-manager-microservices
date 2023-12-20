@@ -15,7 +15,7 @@ services:
     volumes:
       - mysql_mail_data:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: sql
+      MYSQL_ROOT_PASSWORD: abc123
 
   mysql-user:
     image: mysql:latest
@@ -24,7 +24,7 @@ services:
     volumes:
       - mysql_user_data:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: sql
+      MYSQL_ROOT_PASSWORD: abc123
 
   email-service:
     depends_on:
