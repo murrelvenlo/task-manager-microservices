@@ -3,7 +3,7 @@ name: Build and deliver containers
 on: push
 
 jobs:
-  task-service:
+  taskservice:
     runs-on: ubuntu-latest
     name: Java 17 build, test, deliver task-service container
     steps:
@@ -29,7 +29,7 @@ jobs:
 
       - name: Upload container to Docker Hub with Push
         run: docker push ${{ secrets.DOCKER_USER }}/task-service:latest
-  email-service:
+  emailservice:
     runs-on: ubuntu-latest
     name: Java 17 build, test, deliver email-service container
     steps:
@@ -55,7 +55,7 @@ jobs:
 
       - name: Upload container to Docker Hub with Push
         run: docker push ${{ secrets.DOCKER_USER }}/email-service:latest
-  user-service:
+  userservice:
     runs-on: ubuntu-latest
     name: Java 17 build, test, deliver user-service container
     steps:
@@ -81,7 +81,7 @@ jobs:
 
       - name: Upload container to Docker Hub with Push
         run: docker push ${{ secrets.DOCKER_USER }}/user-service:latest
-  api-gateway:
+  apigateway:
     runs-on: ubuntu-latest
     name: Java 17 build, test, deliver api-gateway container
     steps:
