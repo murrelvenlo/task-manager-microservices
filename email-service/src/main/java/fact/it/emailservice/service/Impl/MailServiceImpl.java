@@ -28,7 +28,7 @@ public class MailServiceImpl implements MailService {
     public void sendEmailNotification(MailDto mailDto) {
         // Generate a UUID for the mailCode
         UUID mailCode = UUID.randomUUID();
-        mailDto.setMailCode(mailCode);
+        mailDto.setMailCode(String.valueOf(mailCode));
 
 
         SimpleMailMessage message = new SimpleMailMessage();
