@@ -29,9 +29,9 @@ jobs:
 
       - name: Upload container to Docker Hub with Push
         run: docker push ${{ secrets.DOCKER_USER }}/task-service:latest
-  mail-service:
+  email-service:
     runs-on: ubuntu-latest
-    name: Java 17 build, test, deliver mail-service container
+    name: Java 17 build, test, deliver email-service container
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -44,17 +44,17 @@ jobs:
           distribution: adopt
 
       - name: Build, test and package project
-        working-directory: ./mail-service
+        working-directory: ./email-service
         run: mvn package -B
 
       - name: Docker login
         run: docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Docker Build
-        run: docker build -t ${{ secrets.DOCKER_USER }}/mail-service:latest ./mail-service
+        run: docker build -t ${{ secrets.DOCKER_USER }}/email-service:latest ./email-service
 
       - name: Upload container to Docker Hub with Push
-        run: docker push ${{ secrets.DOCKER_USER }}/mail-service:latest
+        run: docker push ${{ secrets.DOCKER_USER }}/email-service:latest
   user-service:
     runs-on: ubuntu-latest
     name: Java 17 build, test, deliver user-service container
