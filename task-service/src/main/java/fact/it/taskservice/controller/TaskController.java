@@ -25,22 +25,22 @@ public class TaskController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Task '" + taskName + "' created successfully!");
     }
 
-    @GetMapping("/all")
+    @GetMapping("/get/all")
     public List<TaskResponse> getAllTasks() {
         return taskService.getAllTasks();
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<TaskResponse> getAllTasksByTaskCode(@RequestParam List<UUID> taskCode){
+    public List<TaskResponse> getAllTasksByTaskCode(@RequestParam List<String> taskCode){
         return taskService.getAllTasksByTaskCode(taskCode);
     }
-    @GetMapping("/{taskCode}")
-    public TaskResponse findTaskByTaskCode(@PathVariable UUID taskCode) {
+    @GetMapping("/get/{taskCode}")
+    public TaskResponse findTaskByTaskCode(@PathVariable String taskCode) {
         return taskService.findTaskByTaskCode(taskCode);
     }
 
-    @PutMapping("/update/{taskId}")
+    @PutMapping("/updatebyId/{taskId}")
     public ResponseEntity<String> updateTask(@PathVariable String taskId, @RequestBody TaskRequest taskRequest) {
         try {
             taskService.updateTask(taskId, taskRequest);
@@ -50,8 +50,43 @@ public class TaskController {
         }
     }
 
-    @DeleteMapping("/delete/{taskId}")
-    public ResponseEntity<String> deleteTask(@PathVariable String taskId) {
+    @PutMapping("/update/{taskCode}")
+    public ResponseEntity<String> updateUserTask(
+            @PathVariable String taskCode,
+            @RequestBody TaskRequest taskRequest) {
+        try {
+            taskService.updateTaskByCode(taskCode, taskRequest);
+            return ResponseEntity.ok("Task updated successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating task");
+        }
+    }
+
+    @DeleteMapping("/delete/{taskCode}")
+    public ResponseEntity<String> deleteTask(@PathVariable String taskCode) {
+        try {
+            taskService.deleteTaskByCode(taskCode);
+            return new ResponseEntity<>("Task deleted successfully", HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/getByUserCode/{userCode}")
+    public ResponseEntity<List<TaskResponse>> getAllTasksByUserCode(@PathVariable String userCode) {
+        List<TaskResponse> tasks = taskService.getAllTasksByUserCode(userCode);
+
+        if (tasks.isEmpty()) {
+            return ResponseEntity.noContent().build(); // or ResponseEntity.ok(Collections.emptyList());
+        } else {
+            return ResponseEntity.ok(tasks);
+        }
+    }
+
+    @DeleteMapping("/deleteBy/{taskId}")
+    public ResponseEntity<String> deleteTaskById(@PathVariable String taskId) {
         try {
             taskService.deleteTask(taskId);
             return new ResponseEntity<>("Task deleted successfully", HttpStatus.OK);

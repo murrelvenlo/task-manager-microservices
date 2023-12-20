@@ -43,7 +43,7 @@ public class TaskUserServiceImpl implements TaskUserService {
             Date currentDateAndTime = Date.from(now.atZone(ZoneId.systemDefault()).toInstant());
 
             Task task = Task.builder()
-                    .taskCode(UUID.randomUUID())
+                    .taskCode(String.valueOf(UUID.randomUUID()))
                     .name(taskRequest.getName())
                     .status(taskRequest.getStatus())
                     .creationDate(currentDateAndTime)
@@ -54,7 +54,7 @@ public class TaskUserServiceImpl implements TaskUserService {
                     .build();
 
             taskRepository.save(task);
-            sendTaskCreationEmail(taskRequest, UUID.fromString(userCode));
+            sendTaskCreationEmail(taskRequest, userCode);
         } else {
             throw new UserNotFoundException("User not found for userCode: " + userCode);
         }
@@ -69,7 +69,7 @@ public class TaskUserServiceImpl implements TaskUserService {
     }
 
     @Override
-    public void sendTaskCreationEmail(TaskRequest taskRequest, UUID userCode) {
+    public void sendTaskCreationEmail(TaskRequest taskRequest, String userCode) {
 
         try {
             // Retrieve user information for the associated task
@@ -112,7 +112,7 @@ public class TaskUserServiceImpl implements TaskUserService {
                 .block();
 
         if (user != null) {
-            Optional<Task> optionalTask = Optional.ofNullable(taskRepository.findTaskByTaskCode(UUID.fromString(taskCode)));
+            Optional<Task> optionalTask = Optional.ofNullable(taskRepository.findTaskByTaskCode(taskCode));
             if (optionalTask.isPresent()) {
                 Task task = optionalTask.get();
                 task.setName(taskRequest.getName());

@@ -1,0 +1,76 @@
+version: '3'
+
+services:
+  mongo-tasks:
+    image: mongo:latest
+    ports:
+      - 27018:27017
+    volumes:
+      - mongo_task_data:/data/db
+
+  mysql-user:
+    image: mysql:latest
+    ports:
+      - 2201:3306
+    volumes:
+      - mysql_user_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: sql
+
+  mysql-mail:
+    image: mysql:latest
+    ports:
+      - 3308:3306
+    volumes:
+      - mysql_mail_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: sql
+
+  user-service:
+    depends_on:
+      - mysql-user
+      - task-service
+      - mail-service
+    image: venlomj/user-service
+    ports:
+      - 8081:8081
+    links:
+      - mysql-user
+    environment:
+      TASK_SERVICE_BASEURL: task-service:8080
+      MAIL_SERVICE_BASEURL: mail-service:8082
+      MYSQL_DB_USERNAME: admin
+      MYSQL_DB_PASSWORD: sql
+      MYSQL_DB_HOST: mysql-user
+      MYSQL_DB_PORT: 2201
+
+  mail-service:
+    depends_on:
+      - mysql-mail
+    image: venlomj/mail-service
+    ports:
+      - 8082:8082
+    links:
+      - mysql-mail
+    environment:
+      MYSQL_DB_USERNAME: admin
+      MYSQL_DB_PASSWORD: sql
+      MYSQL_DB_HOST: mysql-mail
+      MYSQL_DB_PORT: 3308
+
+  task-service:
+    depends_on:
+      - mongo-tasks
+    image: venlomj/task-service
+    ports:
+      - 8080:8080
+    links:
+      - mongo-tasks
+    environment:
+      MONGODB_PORT: 27017
+      MONGODB_HOST: mongo-tasks
+
+volumes:
+  mongo_task_data:
+  mysql_user_data:
+  mysql_mail_data:

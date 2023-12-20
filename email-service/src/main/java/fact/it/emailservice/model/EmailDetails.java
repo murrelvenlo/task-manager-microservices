@@ -18,7 +18,7 @@ public class EmailDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private UUID mailCode;
+    private String mailCode;
     private String recipient;
     private String messageBody;
     private String messageSubject;

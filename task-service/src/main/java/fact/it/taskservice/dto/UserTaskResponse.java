@@ -16,7 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class UserTaskResponse {
     private String id;
-    private UUID taskCode;
+    private String taskCode;
     private String name;
     private String description;
     private Date creationDate;
@@ -30,5 +30,5 @@ public class UserTaskResponse {
     private String email;
     private String password;
     private String phone;
-    private List<UUID> taskCodes;
+    private List<String> taskCodes;
 }

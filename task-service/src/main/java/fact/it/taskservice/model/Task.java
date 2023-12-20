@@ -19,7 +19,7 @@ public class Task
 {
     @Id
     private String id;
-    private UUID taskCode;
+    private String taskCode;
     private String name;
     private String description;
     private Date creationDate;

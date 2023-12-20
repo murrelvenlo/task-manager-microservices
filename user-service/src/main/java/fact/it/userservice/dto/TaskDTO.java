@@ -13,12 +13,12 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TaskDTO {
-    private UUID taskCode;
+    private String taskCode;
     private String name;
     private String description;
     private Date creationDate;
     private Date dueDate;
     private boolean isProfessional;
-    //    private String userCode;
-    private TaskStatusDTO status;
+    private String userCode;
+    private TaskStatus status;
 }

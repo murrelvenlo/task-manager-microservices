@@ -12,7 +12,7 @@ public interface TaskUserService
 {
     void createTask(TaskRequest taskRequest, String userCode);
     List<TaskResponse> getAllTasks();
-    void sendTaskCreationEmail(TaskRequest taskRequest, UUID userCode);
+    void sendTaskCreationEmail(TaskRequest taskRequest, String userCode);
     UserDto getUserByCode(String userCode);
     void updateTask(String taskCode, TaskRequest taskRequest, String userCode);
     void deleteTask(String taskId);

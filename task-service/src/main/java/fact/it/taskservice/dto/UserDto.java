@@ -20,5 +20,5 @@ public class UserDto {
     private String email;
     private String password;
     private String phone;
-    private List<UUID> taskCodes;
+    private List<String> taskCodes;
 }

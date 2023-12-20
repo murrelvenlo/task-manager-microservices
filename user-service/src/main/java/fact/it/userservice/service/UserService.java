@@ -1,19 +1,17 @@
 package fact.it.userservice.service;
 
-import fact.it.userservice.dto.UserDTO;
+import fact.it.userservice.dto.UpdateUserDto;
 import fact.it.userservice.dto.UserRequest;
 import fact.it.userservice.dto.UserResponse;
-import fact.it.userservice.model.User;
+import fact.it.userservice.model.UserEntity;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public interface UserService {
-    User registerUser(UserRequest userRequest);
-    void sendUserCreationEmail(UserRequest userRequest);
+    void deleteUserByCode(String userCode);
     List<UserResponse> getAllUsers();
-    void updateUser(Long userId, UserRequest userRequest);
-    void deleteUser(Long userId);
-    UserResponse findUserByCode(UUID userCode);
+    UserResponse findUserByCode(String userCode);
+    UserResponse getUserByEmail(String email);
+    void updateUser(String userCode, UpdateUserDto updateUserDto);
 }
