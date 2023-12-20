@@ -20,7 +20,7 @@ services:
   mysql-mail:
     image: mysql:latest
     ports:
-      - 2200:3306
+      - 2201:3306
     volumes:
       - mysql_mail_data:/var/lib/mysql
     environment:
@@ -30,7 +30,7 @@ services:
     depends_on:
       - mysql-user
       - task-service
-      - mail-service
+      - email-service
     image: venlomj/user-service
     ports:
       - 8081:8081
