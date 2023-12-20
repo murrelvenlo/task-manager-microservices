@@ -44,10 +44,10 @@ services:
       MYSQL_DB_HOST: mysql-user
       MYSQL_DB_PORT: 2201
 
-  mail-service:
+  email-service:
     depends_on:
       - mysql-mail
-    image: venlomj/mail-service
+    image: venlomj/email-service
     ports:
       - 8082:8082
     links:
