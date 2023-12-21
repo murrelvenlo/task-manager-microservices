@@ -11,7 +11,7 @@ services:
   mysql-mail:
     image: mysql:latest
     ports:
-      - 3307:3306  # Change the host port to 3307
+      - 3308:3306  # Change the host port to 3307
     volumes:
       - mysql_mail_data:/var/lib/mysql
     environment:
@@ -20,7 +20,7 @@ services:
   mysql-user:
     image: mysql:latest
     ports:
-      - 3306:3306  # Change the host port to 3306
+      - 3307:3306  # Change the host port to 3306
     volumes:
       - mysql_user_data:/var/lib/mysql
     environment:
@@ -38,7 +38,7 @@ services:
       MYSQL_DB_USERNAME: root
       MYSQL_DB_PASSWORD: abc123
       MYSQL_DB_HOST: mysql-mail
-      MYSQL_DB_PORT: 3306
+      MYSQL_DB_PORT: 3308
 
   user-service:
     depends_on:
@@ -47,7 +47,7 @@ services:
       - email-service
     image: venlomj/user-service
     ports:
-      - 8090:8081
+      - 8081:8081
     links:
       - mysql-user
     environment:
