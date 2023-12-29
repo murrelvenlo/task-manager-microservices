@@ -6,14 +6,15 @@ services:
     volumes:
       - mongo_task_data:/data/db
 
-  mysql-mail:
-    image: mysql:latest
+  postgresql-mail:
+    image: postgres
     ports:
-      - '3306:3306'
+      - '5432'
     volumes:
-      - mysql_mail_data:/var/lib/mysql
+      - postgres_mail_data:/var/lib/postgresql/data
     environment:
-      MYSQL_ROOT_PASSWORD: abc123
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234
 
   mysql-user:
     image: mysql:latest
@@ -26,15 +27,13 @@ services:
 
   email-service:
     depends_on:
-      - mysql-mail
+      - postgresql-mail
     image: venlomj/email-service
     ports:
       - '8082:8082'
     environment:
-      MYSQL_DB_USERNAME: root
-      MYSQL_DB_PASSWORD: abc123
-      MYSQL_DB_HOST: mysql-mail
-      MYSQL_DB_PORT: 3306
+      POSTGRES_DB_HOST: postgresql-mail
+      POSTGRES_DB_PORT: 5432
 
   user-service:
     depends_on:
@@ -61,21 +60,21 @@ services:
       MONGODB_PORT: 27017
       MONGODB_HOST: mongo-tasks
 
-#  api-gateway:
-#    depends_on:
-#      - user-service
-#      - task-service
-#    image: venlomj/task-api-gateway
-#    ports:
-#      - 8083:8083
-#    links:
-#      - user-service
-#      - task-service
-#    environment:
-#      USER_SERVICE_BASEURL: user-service:8081
-#      TASK_SERVICE_BASEURL: task-service:8080
+  api-gateway:
+    depends_on:
+      - user-service
+      - task-service
+    image: venlomj/task-api-gateway
+    ports:
+      - 8083:8083
+    links:
+      - user-service
+      - task-service
+    environment:
+      USER_SERVICE_BASEURL: user-service:8081
+      TASK_SERVICE_BASEURL: task-service:8080
 
 volumes:
   mongo_task_data:
   mysql_user_data:
-  mysql_mail_data:
+  postgres_mail_data:
