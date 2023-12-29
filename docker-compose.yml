@@ -1,17 +1,15 @@
-version: '3'
-
 services:
   mongo-tasks:
     image: mongo:latest
     ports:
-      - 27018:27017
+      - '27018:27017'
     volumes:
       - mongo_task_data:/data/db
 
   mysql-mail:
     image: mysql:latest
     ports:
-      - 3308:3306  # Change the host port to 3307
+      - '3306:3306'
     volumes:
       - mysql_mail_data:/var/lib/mysql
     environment:
@@ -20,7 +18,7 @@ services:
   mysql-user:
     image: mysql:latest
     ports:
-      - 3307:3306  # Change the host port to 3306
+      - '3307:3306'
     volumes:
       - mysql_user_data:/var/lib/mysql
     environment:
@@ -31,28 +29,22 @@ services:
       - mysql-mail
     image: venlomj/email-service
     ports:
-      - 8082:8082
-    links:
-      - mysql-mail
+      - '8082:8082'
     environment:
       MYSQL_DB_USERNAME: root
       MYSQL_DB_PASSWORD: abc123
       MYSQL_DB_HOST: mysql-mail
-      MYSQL_DB_PORT: 3308
+      MYSQL_DB_PORT: 3306
 
   user-service:
     depends_on:
       - mysql-user
-      - task-service
       - email-service
     image: venlomj/user-service
     ports:
-      - 8081:8081
-    links:
-      - mysql-user
+      - '8081:8081'
     environment:
-      TASK_SERVICE_BASEURL: task-service:8080
-      MAIL_SERVICE_BASEURL: mail-service:8082
+      MAIL_SERVICE_BASEURL: email-service:8082
       MYSQL_DB_USERNAME: root
       MYSQL_DB_PASSWORD: abc123
       MYSQL_DB_HOST: mysql-user
@@ -64,12 +56,24 @@ services:
       - email-service
     image: venlomj/task-service
     ports:
-      - 8080:8080
-    links:
-      - mongo-tasks
+      - '8080:8080'
     environment:
       MONGODB_PORT: 27017
       MONGODB_HOST: mongo-tasks
+
+#  api-gateway:
+#    depends_on:
+#      - user-service
+#      - task-service
+#    image: venlomj/task-api-gateway
+#    ports:
+#      - 8083:8083
+#    links:
+#      - user-service
+#      - task-service
+#    environment:
+#      USER_SERVICE_BASEURL: user-service:8081
+#      TASK_SERVICE_BASEURL: task-service:8080
 
 volumes:
   mongo_task_data:

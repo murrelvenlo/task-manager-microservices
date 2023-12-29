@@ -13,6 +13,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -173,6 +177,62 @@ public class UserTaskServiceImpl implements UserTaskService {
         }
     }
 
+    @Override
+    public void senTaskReminder(TaskDTO taskDto, UserResponse user) {
+        UserResponse currentUser = authService.getCurrentUser();
+
+        // Check if the due date is today or within the next 3 days
+        LocalDate dueDate = taskDto.getDueDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate today = LocalDate.now();
+        LocalDate threeDaysLater = today.plusDays(3);
+
+        if (dueDate.isEqual(today)) {
+            // Create a MailDto with user information
+            MailDto mailDto = MailDto.builder()
+                    .recipient(user.getEmail())
+                    .messageSubject("Task Created")
+                    .messageBody("Dear " + user.getFirstName() + ", " + taskDto.getName() + ",\nYour task is due to today.")
+                    .build();
+
+            // Send the email using WebClient to the mail-service
+            webClient.post()
+                    .uri("http://localhost:8082/api/email/send-email")
+                    .bodyValue(mailDto)
+                    .retrieve()
+                    .toBodilessEntity()
+                    .block();
+        }
+        else if(dueDate.isAfter(today) && dueDate.isBefore(threeDaysLater)) {
+            // Create a MailDto with user information
+            MailDto mailDto = MailDto.builder()
+                    .recipient(user.getEmail())
+                    .messageSubject("Task Created")
+                    .messageBody("Dear " + user.getFirstName()  + ", " + taskDto.getName() + ",\nYour task is due in three days.")
+                    .build();
+
+            // Send the email using WebClient to the mail-service
+            webClient.post()
+                    .uri("http://localhost:8082/api/email/send-email")
+                    .bodyValue(mailDto)
+                    .retrieve()
+                    .toBodilessEntity()
+                    .block();
+
+        }
+    }
+
+    @Override
+    public List<TaskDTO> getAllTask() {
+        List<TaskDTO> tasks = webClient
+                .get()
+                .uri("http://localhost:8080/api/tasks/get/all")
+                .retrieve()
+                .bodyToFlux(TaskDTO.class)
+                .collectList()
+                .block();
+        return tasks != null ? tasks : Collections.emptyList();
+    }
+
     private void sendUsTaskCreationEmail(UserResponse user) {
         // Create a MailDto with user information
         MailDto mailDto = MailDto.builder()
@@ -183,7 +243,7 @@ public class UserTaskServiceImpl implements UserTaskService {
 
         // Send the email using WebClient to the mail-service
         webClient.post()
-                .uri("http://localhost:8083/api/email/send-email")
+                .uri("http://localhost:8082/api/email/send-email")
                 .bodyValue(mailDto)
                 .retrieve()
                 .toBodilessEntity()

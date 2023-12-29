@@ -76,8 +76,5 @@ public class AuthController {
     @PostMapping("/context")
     public UserResponse getCurrentUserContext() {
         return authService.getCurrentUser();
-//        SecurityContext context = SecurityContextHolder.getContext();
-//        Authentication authentication = context.getAuthentication();
-//        return ((UserDetails) authentication.getPrincipal()).getUsername();
     }
 }

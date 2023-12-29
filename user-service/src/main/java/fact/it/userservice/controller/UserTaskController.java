@@ -86,7 +86,7 @@ public class UserTaskController {
     }
 
     @GetMapping("/getAllTasksForCurrentUser")
-    public ResponseEntity<List<TaskDTO>> getAllTasksForCurrentUser() {
+    public ResponseEntity<List<TaskDTO>> getAllTasksForCurrentUser(@RequestHeader("authenticatedUser") String username) {
         try {
             UserResponse currentUser = authService.getCurrentUser();
 

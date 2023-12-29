@@ -21,7 +21,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
 public class SecurityConfig {
 
     @Autowired
@@ -40,10 +39,9 @@ public class SecurityConfig {
                 .and()
                 .authorizeHttpRequests()
                 .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/validate-token", "/api/auth/context").permitAll()
-                .requestMatchers("/api/users/code/**").permitAll()
-                .requestMatchers("/api/auth/all").hasAuthority("ROLE_ADMIN")
-                .requestMatchers("/api/users/all").hasAuthority("ROLE_ADMIN")
-                .requestMatchers( "/api/user-task/update/**", "/api/user-task/addForCurrentUser", "/api/user-task/delete/**", "/api/user-task/getAllTasksForCurrentUser").permitAll()
+                .requestMatchers("/api/users/code/**", "/api/users/update/**").permitAll()
+                .requestMatchers("/api/users/all", "/api/users/delete/**").hasAuthority("ROLE_ADMIN")
+                .requestMatchers( "/api/user-task/update/**", "/api/user-task/addForCurrentUser", "/api/user-task/getByUserCode/**", "/api/user-task/delete/**", "/api/user-task/getAllTasksForCurrentUser").permitAll()
                 .requestMatchers("/api/user-task/get/all").hasRole("ADMIN") // Add other antMatchers as needed
                 .and()
                 .addFilterBefore(requestFilter, UsernamePasswordAuthenticationFilter.class)
