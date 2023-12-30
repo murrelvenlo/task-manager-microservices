@@ -23,7 +23,7 @@ services:
     ports:
       - "3307:3306"
     volumes:
-      - mariadb_user_data:/var/lib/mysql
+      - mysql_user_data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: abc123
 
