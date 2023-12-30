@@ -70,7 +70,7 @@ services:
     depends_on:
       - user-service
       - task-service
-    image: venlomj/task-api-gateway
+    image: venlomj/api-gateway
     ports:
       - "8083:8083"
     links:
