@@ -1,20 +1,27 @@
 package fact.it.apigateway.config;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.stereotype.Component;
 
-@Component
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @Configuration
-@EnableWebSecurity
+@EnableWebFluxSecurity
 public class SecurityConfig {
 
+
     @Bean
-    public SecurityWebFilterChain filterChain(ServerHttpSecurity http) {
-        http.csrf(csrf -> csrf.disable());
-        return http.build();
+    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+        return http.csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .authorizeExchange(exchange -> exchange.pathMatchers("/api/auth/**")
+                        .permitAll()
+                        .anyExchange().authenticated()
+                ).oauth2ResourceServer((oauth) -> oauth
+                        .jwt(withDefaults()))
+                .build();
     }
 }

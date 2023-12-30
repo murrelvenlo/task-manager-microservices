@@ -1,7 +1,6 @@
 server:
   port: 8083
 
-
 logging:
   level:
     root: INFO
@@ -9,9 +8,23 @@ logging:
     org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator: INFO
     reactor.netty: INFO
     org.springframework.security: TRACE
+
 spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENTID}
+            client-secret: ${GOOGLE_CLIENTSECRET}
+            scope: openid, profile, email
+      resourceserver:
+        jwt:
+          issuer-uri: https://accounts.google.com
+          jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs
   main:
     web-application-type: reactive
+    allow-bean-definition-overriding: true
   cloud:
     gateway:
       routes:
@@ -19,18 +32,17 @@ spring:
           uri: http://${USER_SERVICE_BASEURL:localhost:8081}
           predicates:
             - Path=/api/users/**
-          filters:
-            - AuthenticationFilter
+
         - id: user-task-service
           uri: http://${USER_SERVICE_BASEURL:localhost:8081}
           predicates:
             - Path=/api/user-task/**
-          filters:
-            - AuthenticationFilter
+
         - id: authentication
           uri: http://${USER_SERVICE_BASEURL:localhost:8081}
           predicates:
             - Path=/api/auth/**
+
 
 #        - id: user-service-register
 #          uri: http://${USER_SERVICE_BASEURL:localhost:8081}

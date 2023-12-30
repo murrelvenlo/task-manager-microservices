@@ -2,38 +2,44 @@ services:
   mongo-tasks:
     image: mongo:latest
     ports:
-      - '27018:27017'
+      - "27018:27017"
     volumes:
       - mongo_task_data:/data/db
 
-  postgresql-mail:
-    image: postgres
+  mariadb-mail:
+    image: mariadb
     ports:
-      - '5432'
+      - "3306:3306"
     volumes:
-      - postgres_mail_data:/var/lib/postgresql/data
+      - mariadb_mail_data:/var/lib/mysql
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=1234
+        MYSQL_ROOT_PASSWORD: venlomj
+        MYSQL_DATABASE: email_service_db
+        MYSQL_USER: venlomj
+        MYSQL_PASSWORD: venlomj
 
   mysql-user:
     image: mysql:latest
     ports:
-      - '3307:3306'
+      - "3307:3306"
     volumes:
-      - mysql_user_data:/var/lib/mysql
+      - mariadb_user_data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: abc123
 
   email-service:
     depends_on:
-      - postgresql-mail
+      - mariadb-mail
     image: venlomj/email-service
     ports:
-      - '8082:8082'
+      - "8082:8082"
     environment:
-      POSTGRES_DB_HOST: postgresql-mail
-      POSTGRES_DB_PORT: 5432
+      MYSQL_DB_HOST: mariadb-mail
+      MYSQL_ROOT_PORT: 3306
+      MYSQL_ROOT_PASSWORD: venlomj
+      MYSQL_DATABASE: mail_service_db
+      MYSQL_USER: venlomj
+      MYSQL_PASSWORD: venlomj
 
   user-service:
     depends_on:
@@ -41,12 +47,12 @@ services:
       - email-service
     image: venlomj/user-service
     ports:
-      - '8081:8081'
+      - "8081:8081"
     environment:
       MAIL_SERVICE_BASEURL: email-service:8082
       MYSQL_DB_USERNAME: root
       MYSQL_DB_PASSWORD: abc123
-      MYSQL_DB_HOST: mysql-user
+      MYSQL_DB_HOST: mysql-inventory
       MYSQL_DB_PORT: 3307
 
   task-service:
@@ -55,7 +61,7 @@ services:
       - email-service
     image: venlomj/task-service
     ports:
-      - '8080:8080'
+      - "8080:8080"
     environment:
       MONGODB_PORT: 27017
       MONGODB_HOST: mongo-tasks
@@ -66,10 +72,11 @@ services:
       - task-service
     image: venlomj/task-api-gateway
     ports:
-      - 8083:8083
+      - "8083:8083"
     links:
       - user-service
       - task-service
+    restart: on-failure
     environment:
       USER_SERVICE_BASEURL: user-service:8081
       TASK_SERVICE_BASEURL: task-service:8080
@@ -77,4 +84,4 @@ services:
 volumes:
   mongo_task_data:
   mysql_user_data:
-  postgres_mail_data:
+  mariadb_mail_data:
