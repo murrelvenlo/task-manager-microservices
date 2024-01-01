@@ -37,7 +37,7 @@ class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
                 .anyRequest()
                 .authenticated();
 
-        http.exceptionHandling().accessDeniedHandler(restAccessDeniedHandler);
+        http.build();
     }
 
     // Disable default role prefix ROLE_
