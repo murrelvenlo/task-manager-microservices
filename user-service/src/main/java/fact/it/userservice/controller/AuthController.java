@@ -2,79 +2,36 @@ package fact.it.userservice.controller;
 
 import fact.it.userservice.dto.LoginRequest;
 import fact.it.userservice.dto.LoginResponse;
-import fact.it.userservice.dto.UserRequest;
-import fact.it.userservice.dto.UserResponse;
-import fact.it.userservice.exception.UserRegistrationException;
-import fact.it.userservice.model.UserEntity;
 import fact.it.userservice.service.AuthService;
-import fact.it.userservice.validator.UserValidator;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Map;
+
 
 @RestController
-@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
+     Logger logger = LoggerFactory.getLogger(AuthController.class);
 
-    private final AuthService authService;
-    private final UserValidator userValidator;
+     @Autowired
+    private AuthService authService;
 
-    @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody UserRequest userRequest) {
-        try {
-            // Validate user request
-            Map<String, List<String>> validationErrors = userValidator.validateUserRequest(userRequest);
+    @PostMapping("login")
+    public ResponseEntity<LoginResponse> login (HttpServletRequest request,
+                                                @RequestBody LoginRequest loginRequest) throws Exception {
+        logger.info("Executing login");
 
-            // If validation succeeds, proceed with user registration
-            if (!validationErrors.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(validationErrors);
-            }
+        ResponseEntity<LoginResponse> response = null;
+        response = authService.login(loginRequest);
 
-            UserEntity newUser = authService.registerUser(userRequest);
-            String fullName = newUser.getFirstName() + " " + newUser.getLastName();
-            String successMessage = "The user, " + fullName + " successfully created.";
-            return ResponseEntity.ok(successMessage);
-        } catch (UserRegistrationException e) {
-            // Handle the validation exception
-            // Log or print the exception message for debugging
-            System.out.println("Exception Message: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (Exception e) {
-            // Handle other exceptions if needed
-            System.out.println("Unexpected Exception: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error occurred.");
-        }
-    }
-
-
-
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
-        try {
-            LoginResponse response = authService.authenticateUser(loginRequest);
-            return ResponseEntity.ok(response);
-        } catch (BadCredentialsException e){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect email or password!");
-        }
-    }
-
-    @PostMapping("/validate-token")
-    public ResponseEntity<String> validateToken(@RequestParam("token") String token) {
-        if (authService.validateToken(token)) {
-            return ResponseEntity.ok("Token is valid");
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
-        }
-    }
-
-    @PostMapping("/context")
-    public UserResponse getCurrentUserContext() {
-        return authService.getCurrentUser();
+        return response;
     }
 }

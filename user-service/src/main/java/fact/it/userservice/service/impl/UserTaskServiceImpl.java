@@ -1,22 +1,23 @@
-package fact.it.userservice.service.impl;
+package fact.it.userservice.service.Impl;
 
 import fact.it.userservice.dto.MailDto;
 import fact.it.userservice.dto.TaskDTO;
 import fact.it.userservice.dto.UserResponse;
+import fact.it.userservice.model.UserEntity;
 import fact.it.userservice.repository.UserRepository;
-import fact.it.userservice.service.AuthService;
+import fact.it.userservice.service.UserService;
 import fact.it.userservice.service.UserTaskService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -28,17 +29,17 @@ public class UserTaskServiceImpl implements UserTaskService {
     private final UserRepository userRepository;
     private final ModelMapper mapper;
     private final WebClient webClient;
-    private final AuthService authService;
-
+    private final UserService userService;
     private static final Logger log = LoggerFactory.getLogger(UserTaskServiceImpl.class);
 
-    @Override
-    public void addTaskForUser(TaskDTO taskDto) {
-        UserResponse currentUser = authService.getCurrentUser();
 
-        if (currentUser != null) {
+    @Override
+    public void addTaskForUser(String userCode, TaskDTO taskDto) {
+        UserEntity user = userRepository.findByUserCode(userCode);
+
+        if (user != null) {
             // Set the userCode on the taskDto before making the request
-            taskDto.setUserCode(currentUser.getUserCode());
+            taskDto.setUserCode(userCode);
 
             try {
                 webClient.post()
@@ -49,8 +50,8 @@ public class UserTaskServiceImpl implements UserTaskService {
                         .block(); // Block to wait for the result, handle this differently in a real application
 
                 // Log the information or take any other action
-                log.info("Task added successfully for user {}", currentUser.getUserCode());
-                sendUsTaskCreationEmail(currentUser);
+                log.info("Task added successfully for user {}", userCode);
+                sendUsTaskCreationEmail(user);
 
                 // Optional: Update the original taskDto with the new taskCode
                 // Note: In this case, you won't have the createdTaskDto as there's no response body
@@ -64,44 +65,13 @@ public class UserTaskServiceImpl implements UserTaskService {
         }
     }
 
-    //    @Override
-//    public void addTaskForUser(String userCode, TaskDto taskDto) {
-//        UserEntity user = userRepository.findByUserCode(userCode);
-//
-//        if (user != null) {
-//            // Set the userCode on the taskDto before making the request
-//            taskDto.setUserCode(userCode);
-//
-//            try {
-//                webClient.post()
-//                        .uri("http://localhost:8080/api/tasks/add")
-//                        .bodyValue(taskDto)
-//                        .retrieve()
-//                        .toBodilessEntity()
-//                        .block(); // Block to wait for the result, handle this differently in a real application
-//
-//                // Log the information or take any other action
-//                log.info("Task added successfully for user {}", userCode);
-//                sendUsTaskCreationEmail(user);
-//
-//                // Optional: Update the original taskDto with the new taskCode
-//                // Note: In this case, you won't have the createdTaskDto as there's no response body
-//                // TaskDto createdTaskDto = responseEntity.getBody();
-//                // taskDto.setTaskCode(createdTaskDto.getTaskCode());
-//            } catch (Exception e) {
-//                // Handle exceptions appropriately
-//                log.error("Exception adding task for user: {}", e.getMessage());
-//                throw new RuntimeException("Exception adding task for user: " + e.getMessage());
-//            }
-//        }
-//    }
     @Override
     public void updateTaskForUser(String taskCode, TaskDTO taskDto) {
-        UserResponse currentUser = authService.getCurrentUser();
+        UserEntity user = userRepository.findByUserCode(taskDto.getUserCode());
 
-        if (currentUser != null) {
+        if (user != null) {
             // Set the userCode on the taskRequest before making the request
-            taskDto.setUserCode(currentUser.getUserCode());
+            taskDto.setUserCode(user.getUserCode());
 
             try {
                 webClient.put()
@@ -112,7 +82,7 @@ public class UserTaskServiceImpl implements UserTaskService {
                         .block(); // Block to wait for the result, handle this differently in a real application
 
                 // Log the information or take any other action
-                String fullName = Objects.toString(currentUser.getFirstName(), "") + " " + Objects.toString(currentUser.getLastName(), "");
+                String fullName = Objects.toString(user.getFirstName(), "") + " " + Objects.toString(user.getLastName(), "");
 
                 log.info("Task updated successfully for user {}", fullName);
             } catch (Exception e) {
@@ -121,15 +91,16 @@ public class UserTaskServiceImpl implements UserTaskService {
                 throw new RuntimeException("Exception updating task for user: " + e.getMessage());
             }
         } else {
-            throw new RuntimeException("User not found for userCode: " + currentUser.getUserCode());
+            throw new RuntimeException("User not found for userCode: " + user.getUserCode());
         }
+
     }
 
     @Override
-    public void deleteTaskForUser(String taskCode) {
-        UserResponse currentUser = authService.getCurrentUser();
+    public void deleteTaskForUser(String userCode, String taskCode) {
+        UserEntity user = userRepository.findByUserCode(userCode);
 
-        if (currentUser != null) {
+        if (user != null) {
             try {
                 webClient.delete()
                         .uri("http://localhost:8080/api/tasks/delete/{taskCode}", taskCode)
@@ -143,17 +114,17 @@ public class UserTaskServiceImpl implements UserTaskService {
                 throw new RuntimeException("Exception updating task for user: " + e.getMessage());
             }
         } else {
-            throw new RuntimeException("User not found for userCode: " + currentUser.getUserCode());
+            throw new RuntimeException("User not found for userCode: " + user.getUserCode());
         }
     }
 
     @Override
     public List<TaskDTO> getTasksForCurrentUserByUserCode(String userCode) {
         try {
-            // Get the authenticated user
-            UserResponse currentUser = authService.getCurrentUser();
+            // Get the user by code
+            UserEntity user = userRepository.findByUserCode(userCode);
 
-            if (currentUser != null) {
+            if (user!= null) {
                 // Make a request to the task-service to get tasks by user code
                 List<TaskDTO> userTasks = webClient
                         .get()
@@ -179,7 +150,8 @@ public class UserTaskServiceImpl implements UserTaskService {
 
     @Override
     public void senTaskReminder(TaskDTO taskDto, UserResponse user) {
-        UserResponse currentUser = authService.getCurrentUser();
+        UserEntity userByCode = userRepository.findByUserCode(user.getUserCode());
+
 
         // Check if the due date is today or within the next 3 days
         LocalDate dueDate = taskDto.getDueDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
@@ -233,7 +205,7 @@ public class UserTaskServiceImpl implements UserTaskService {
         return tasks != null ? tasks : Collections.emptyList();
     }
 
-    private void sendUsTaskCreationEmail(UserResponse user) {
+    private void sendUsTaskCreationEmail(UserEntity user) {
         // Create a MailDto with user information
         MailDto mailDto = MailDto.builder()
                 .recipient(user.getEmail())

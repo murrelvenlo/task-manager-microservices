@@ -6,9 +6,9 @@ import fact.it.userservice.dto.UserResponse;
 import fact.it.userservice.model.UserEntity;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface UserService {
+    UserEntity registerUser(UserRequest userRequest);
     void deleteUserByCode(String userCode);
     List<UserResponse> getAllUsers();
     UserResponse findUserByCode(String userCode);

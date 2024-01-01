@@ -1,5 +1,6 @@
 package fact.it.userservice.validator;
 
+
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 
 public class PhoneNumberValidator {

@@ -1,12 +1,12 @@
 package fact.it.userservice.dto;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.util.UUID;
 
 @Data
 @Builder
@@ -20,5 +20,6 @@ public class TaskDTO {
     private Date dueDate;
     private boolean isProfessional;
     private String userCode;
-    private TaskStatus status;
+    private TaskStatusDTO status;
 }
+

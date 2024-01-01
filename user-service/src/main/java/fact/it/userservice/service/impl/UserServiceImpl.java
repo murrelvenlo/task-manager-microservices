@@ -1,20 +1,20 @@
-package fact.it.userservice.service.impl;
+package fact.it.userservice.service.Impl;
 
 import fact.it.userservice.dto.MailDto;
 import fact.it.userservice.dto.UpdateUserDto;
 import fact.it.userservice.dto.UserRequest;
 import fact.it.userservice.dto.UserResponse;
-import fact.it.userservice.exception.UserNotFoundException;
+import fact.it.userservice.model.Role;
 import fact.it.userservice.model.UserEntity;
 import fact.it.userservice.repository.UserRepository;
 import fact.it.userservice.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.security.cert.CertPathBuilder;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -22,10 +22,28 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService
-{
+public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ModelMapper mapper;
+    private final WebClient webClient;
+    @Override
+    public UserEntity registerUser(UserRequest userRequest) {
+        UserEntity newUser = UserEntity.builder()
+                .firstName(userRequest.getFirstName())
+                .lastName(userRequest.getLastName())
+                .username(userRequest.getUsername())
+                .email(userRequest.getEmail())
+                .password(userRequest.getPassword())
+                .phone(userRequest.getPhone())
+                .userCode(UUID.randomUUID().toString())
+                .role(Role.USER)
+                .build();
+
+        newUser = userRepository.save(newUser);
+        sendUserCreationEmail(userRequest);
+        return newUser;
+    }
+
     @Override
     @Transactional
     public void deleteUserByCode(String userCode) {
@@ -70,7 +88,7 @@ public class UserServiceImpl implements UserService
                     .firstName(updateUserDto.getFirstName())
                     .lastName(updateUserDto.getLastName())
                     .username(updateUserDto.getUsername())
-                    .password(new BCryptPasswordEncoder().encode(updateUserDto.getPassword()))
+                    .password(updateUserDto.getPassword())
                     .phone(updateUserDto.getPhone())
                     .build();
 
@@ -78,5 +96,22 @@ public class UserServiceImpl implements UserService
         } else {
             throw new RuntimeException("User with userCode " + userCode + " not found");
         }
+    }
+
+    private void sendUserCreationEmail(UserRequest userRequest) {
+        // Create a MailDto with user information
+        MailDto mailDto = MailDto.builder()
+                .recipient(userRequest.getEmail())
+                .messageSubject("Account Created")
+                .messageBody("Dear " + userRequest.getFirstName() + ",\nYour account has been successfully created.")
+                .build();
+
+        // Send the email using WebClient to the mail-service
+        webClient.post()
+                .uri("http://localhost:8083/api/email/send-email")
+                .bodyValue(mailDto)
+                .retrieve()
+                .toBodilessEntity()
+                .block();
     }
 }

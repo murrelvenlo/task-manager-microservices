@@ -1,86 +1,83 @@
 package fact.it.userservice.config;
 
-import fact.it.userservice.filter.JwtRequestFilter;
-import fact.it.userservice.service.jwt.UserDetailsServiceImpl;
+import fact.it.userservice.exception.CustomKeycloakAuthenticationHandler;
+import fact.it.userservice.exception.RestAccessDeniedHandler;
+import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
+import org.keycloak.adapters.springsecurity.KeycloakConfiguration;
+import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticationProvider;
+import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter;
+import org.keycloak.adapters.springsecurity.filter.KeycloakAuthenticationProcessingFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
+import org.springframework.security.core.session.SessionRegistryImpl;
+import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy;
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 
-@Configuration
-@EnableWebSecurity
-public class SecurityConfig {
+@KeycloakConfiguration
+class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
 
     @Autowired
-    private JwtRequestFilter requestFilter;
+    RestAccessDeniedHandler restAccessDeniedHandler;
 
-    @Bean
-    public UserDetailsService userDetailsService(){
-        return new UserDetailsServiceImpl();
+    @Autowired
+    CustomKeycloakAuthenticationHandler customKeycloakAuthenticationHandler;
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        super.configure(http);
+        http
+                .authorizeRequests()
+                .requestMatchers("/login").permitAll()
+                .anyRequest()
+                .authenticated();
+
+        http.exceptionHandling().accessDeniedHandler(restAccessDeniedHandler);
     }
 
-
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authorizeHttpRequests()
-                .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/validate-token", "/api/auth/context").permitAll()
-                .requestMatchers("/api/users/code/**", "/api/users/update/**").permitAll()
-                .requestMatchers("/api/users/all", "/api/users/delete/**").hasAuthority("ROLE_ADMIN")
-                .requestMatchers( "/api/user-task/update/**", "/api/user-task/addForCurrentUser", "/api/user-task/getByUserCode/**", "/api/user-task/delete/**", "/api/user-task/getAllTasksForCurrentUser").permitAll()
-                .requestMatchers("/api/user-task/get/all").hasRole("ADMIN") // Add other antMatchers as needed
-                .and()
-                .addFilterBefore(requestFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
+    // Disable default role prefix ROLE_
+    @Autowired
+    public void configureGlobal( AuthenticationManagerBuilder auth) throws Exception {
+        KeycloakAuthenticationProvider keycloakAuthenticationProvider = keycloakAuthenticationProvider();
+        keycloakAuthenticationProvider.setGrantedAuthoritiesMapper(new SimpleAuthorityMapper());
+        auth.authenticationProvider(keycloakAuthenticationProvider);
     }
 
+    // Use Spring Boot property files instead of default keycloak.json
+    @Bean
+    public KeycloakSpringBootConfigResolver KeycloakConfigResolver() {
+        return new KeycloakSpringBootConfigResolver();
+    }
+
+    // Register authentication strategy for public or confidential applications
+    @Bean
+    @Override
+    protected SessionAuthenticationStrategy sessionAuthenticationStrategy() {
+        return new RegisterSessionAuthenticationStrategy(new SessionRegistryImpl());
+    }
+
+    //Keycloak auth exception handler
 //    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        return http.csrf().disable()
-//                .authorizeHttpRequests()
-//                .requestMatchers("/api/users/login", "/api/users/register", "/api/users/validate-token").permitAll()
-//                .requestMatchers("/api/users/all").hasAuthority("ROLE_ADMIN")
-//                .requestMatchers("/api/get/all").authenticated()
-//                .and()
-//                .authorizeHttpRequests().requestMatchers("/api/**")
-//                .authenticated().and()
-//                .sessionManagement()
-//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                .and()
-//                .addFilterBefore(requestFilter, UsernamePasswordAuthenticationFilter.class)
-//                .build();
+//    @Override
+//    protected KeycloakAuthenticationProcessingFilter keycloakAuthenticationProcessingFilter() throws Exception {
+//        KeycloakAuthenticationProcessingFilter filter = new KeycloakAuthenticationProcessingFilter(this.authenticationManagerBean());
+//        filter.setSessionAuthenticationStrategy(this.sessionAuthenticationStrategy());
+//        filter.setAuthenticationFailureHandler(customKeycloakAuthenticationHandler);
+//        return filter;
 //    }
 
+    @Override
+    public void init(WebSecurity builder) throws Exception {
 
-    @Bean
-    public PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
+    @Override
+    public void configure(WebSecurity builder) throws Exception {
 
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(userDetailsService());
-        authenticationProvider.setPasswordEncoder(passwordEncoder());
-        return authenticationProvider;
     }
 }

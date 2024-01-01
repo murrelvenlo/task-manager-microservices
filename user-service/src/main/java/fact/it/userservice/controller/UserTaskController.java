@@ -1,11 +1,14 @@
 package fact.it.userservice.controller;
 
+
 import fact.it.userservice.dto.TaskDTO;
 import fact.it.userservice.dto.UserResponse;
-import fact.it.userservice.service.AuthService;
+import fact.it.userservice.model.UserEntity;
+import fact.it.userservice.repository.UserRepository;
 import fact.it.userservice.service.UserService;
 import fact.it.userservice.service.UserTaskService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,14 +22,15 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class UserTaskController {
 
-    private final UserTaskService userTaskService;
-    private final AuthService authService;
-    private final UserService userService;
+    @Autowired
+    private UserTaskService userTaskService;
+    private final UserRepository userRepository;
 
-    @PostMapping("/addForCurrentUser")
-    public ResponseEntity<String> addTaskForCurrentUser(@RequestBody TaskDTO taskDto) {
+    @PostMapping("/addForCurrentUser/{userCode}")
+    public ResponseEntity<String> addTaskForCurrentUser(@RequestBody TaskDTO taskDto,
+            @PathVariable String userCode) {
         try {
-            userTaskService.addTaskForUser(taskDto);
+            userTaskService.addTaskForUser(userCode, taskDto);
             return ResponseEntity.ok("Task, " + taskDto.getName() + ", created successfully");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -36,38 +40,39 @@ public class UserTaskController {
         }
     }
 
-
-    @PutMapping("/update/{taskCode}")
+    @PutMapping("/update/{userCode}/{taskCode}")
     public ResponseEntity<String> updateTaskForUser(
             @PathVariable String taskCode,
+            @PathVariable String userCode,
             @RequestBody TaskDTO taskDto) {
         try {
-            UserResponse currentUser = authService.getCurrentUser();
-            if (currentUser != null) {
-                String fullName = Objects.toString(currentUser.getFirstName(), "") + " " + Objects.toString(currentUser.getLastName(), "");
+            UserEntity user = userRepository.findByUserCode(userCode);
+            if (user != null) {
+                String fullName = Objects.toString(user.getFirstName(), "") + " " + Objects.toString(user.getLastName(), "");
                 userTaskService.updateTaskForUser(taskCode, taskDto);
                 return ResponseEntity.ok("Task updated successfully for user, " + fullName);
             } else {
                 // Handle the case where user is not found
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found for code " + currentUser.getUserCode());
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found for code " + user.getUserCode());
             }
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
-    @DeleteMapping("/delete/{taskCode}")
+    @DeleteMapping("/delete/{userCode}/{taskCode}")
     public ResponseEntity<String> deleteTaskForUser(
-            @PathVariable String taskCode) {
+            @PathVariable String taskCode,
+            @PathVariable String userCode) {
         try {
-            UserResponse currentUser = authService.getCurrentUser();
-            if (currentUser != null) {
-                String fullName = Objects.toString(currentUser.getFirstName(), "") + " " + Objects.toString(currentUser.getLastName(), "");
-                userTaskService.deleteTaskForUser(taskCode);
+            UserEntity user = userRepository.findByUserCode(userCode);
+            if (user != null) {
+                String fullName = Objects.toString(user.getFirstName(), "") + " " + Objects.toString(user.getLastName(), "");
+                userTaskService.deleteTaskForUser(userCode, taskCode);
                 return ResponseEntity.ok("Task deleted successfully for user, " + fullName);
             } else {
                 // Handle the case where user is not found
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found for code " + currentUser.getUserCode());
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found for code " + user.getUserCode());
             }
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -79,28 +84,22 @@ public class UserTaskController {
         List<TaskDTO> tasks = userTaskService.getTasksForCurrentUserByUserCode(userCode);
 
         if (tasks.isEmpty()) {
-            return ResponseEntity.noContent().build(); // or ResponseEntity.ok(Collections.emptyList());
+            return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.ok(tasks);
         }
     }
 
-    @GetMapping("/getAllTasksForCurrentUser")
-    public ResponseEntity<List<TaskDTO>> getAllTasksForCurrentUser(@RequestHeader("authenticatedUser") String username) {
+    @GetMapping("/getAllTasksForCurrentUser/{userCode}")
+    public ResponseEntity<List<TaskDTO>> getAllTasksForCurrentUser(@PathVariable String userCode) {
         try {
-            UserResponse currentUser = authService.getCurrentUser();
+            UserEntity user = userRepository.findByUserCode(userCode);
+            List<TaskDTO> tasks = userTaskService.getTasksForCurrentUserByUserCode(user.getUserCode());
 
-            if (currentUser != null) {
-                List<TaskDTO> tasks = userTaskService.getTasksForCurrentUserByUserCode(currentUser.getUserCode());
-
-                if (tasks.isEmpty()) {
-                    return ResponseEntity.noContent().build(); // or ResponseEntity.ok(Collections.emptyList());
-                } else {
-                    return ResponseEntity.ok(tasks);
-                }
+            if (tasks.isEmpty()) {
+                return ResponseEntity.noContent().build();
             } else {
-                // Handle the case where user is not found
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
+                return ResponseEntity.ok(tasks);
             }
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -108,3 +107,4 @@ public class UserTaskController {
         }
     }
 }
+

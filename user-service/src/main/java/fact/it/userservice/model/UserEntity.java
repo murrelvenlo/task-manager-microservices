@@ -3,10 +3,13 @@ package fact.it.userservice.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
-import java.util.UUID;
+
 
 @Entity
 @Table(name = "users")
@@ -14,8 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 @Data
-public class UserEntity
-{
+public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
