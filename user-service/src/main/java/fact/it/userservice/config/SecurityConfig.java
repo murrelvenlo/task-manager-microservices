@@ -33,7 +33,7 @@ class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
         super.configure(http);
         http
                 .authorizeRequests()
-                .requestMatchers("/login").permitAll()
+                .requestMatchers("/login", "/api/users/**").permitAll()
                 .anyRequest()
                 .authenticated();
 
