@@ -55,9 +55,9 @@ jobs:
 
       - name: Upload container to Docker Hub with Push
         run: docker push ${{ secrets.DOCKER_USER }}/email-service:latest
-  userservice:
+  teamservice:
     runs-on: ubuntu-latest
-    name: Java 17 build, test, deliver user-service container
+    name: Java 17 build, test, deliver team-service container
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -70,17 +70,17 @@ jobs:
           distribution: adopt
 
       - name: Build, test and package project
-        working-directory: ./user-service
+        working-directory: ./team-service
         run: mvn package -B
 
       - name: Docker login
         run: docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Docker Build
-        run: docker build -t ${{ secrets.DOCKER_USER }}/user-service:latest ./user-service
+        run: docker build -t ${{ secrets.DOCKER_USER }}/task-team-service:latest ./team-service
 
       - name: Upload container to Docker Hub with Push
-        run: docker push ${{ secrets.DOCKER_USER }}/user-service:latest
+        run: docker push ${{ secrets.DOCKER_USER }}/task-team-service:latest
   apigateway:
     runs-on: ubuntu-latest
     name: Java 17 build, test, deliver api-gateway container

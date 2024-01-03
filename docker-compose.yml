@@ -27,12 +27,12 @@ services:
         MYSQL_USER: venlomj
         MYSQL_PASSWORD: venlomj
 
-  mysql-user:
+  mysql-team:
     image: mysql:latest
     ports:
       - "3307:3306"
     volumes:
-      - mysql_user_data:/var/lib/mysql
+      - mysql_team_data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: abc123
 
@@ -50,18 +50,18 @@ services:
       MYSQL_USER: venlomj
       MYSQL_PASSWORD: venlomj
 
-  user-service:
+  team-service:
     depends_on:
-      - mysql-user
+      - mysql-team
       - email-service
-    image: venlomj/user-service
+    image: venlomj/task-team-service
     ports:
       - "8081:8081"
     environment:
       MAIL_SERVICE_BASEURL: email-service:8082
       MYSQL_DB_USERNAME: root
       MYSQL_DB_PASSWORD: abc123
-      MYSQL_DB_HOST: mysql-user
+      MYSQL_DB_HOST: mysql-team
       MYSQL_DB_PORT: 3306
 
   task-service:
@@ -77,20 +77,20 @@ services:
 
   api-gateway:
     depends_on:
-      - user-service
+      - team-service
       - task-service
     image: venlomj/api-gateway
     ports:
       - "8083:8083"
     links:
-      - user-service
+      - team-service
       - task-service
     restart: on-failure
     environment:
-      USER_SERVICE_BASEURL: user-service:8081
+      USER_SERVICE_BASEURL: team-service:8081
       TASK_SERVICE_BASEURL: task-service:8080
 
 volumes:
   mongo_task_data:
-  mysql_user_data:
+  mysql_team_data:
   mariadb_mail_data:

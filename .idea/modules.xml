@@ -6,7 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/email-service/email-service.iml" filepath="$PROJECT_DIR$/email-service/email-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/task-service/task-service.iml" filepath="$PROJECT_DIR$/task-service/task-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/tasks-microservices.iml" filepath="$PROJECT_DIR$/.idea/tasks-microservices.iml" />
-      <module fileurl="file://$PROJECT_DIR$/user-service/user-service.iml" filepath="$PROJECT_DIR$/user-service/user-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/team-service/team-service.iml" filepath="$PROJECT_DIR$/team-service/team-service.iml" />
     </modules>
   </component>
 </project>
