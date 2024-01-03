@@ -6,6 +6,16 @@ services:
     volumes:
       - mongo_task_data:/data/db
 
+  keycloak-db:
+    image: postgres
+    environment:
+      POSTGRES_HOST_AUTH: trust
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: keycloak_db
+    ports:
+      - '5432:5432'
+
   keycloak:
     image: quay.io/keycloak/keycloak:23.0.3
     ports:
@@ -13,7 +23,16 @@ services:
     environment:
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=admin
-    command: ["start-dev", "-b", "0.0.0.0"]
+      - DB_VENDOR=keycloak-db
+      - DB_SCHEMA=admin
+      - DB_USER=admin
+      - DB_PASSWORD=admin
+      - KEYCLOAK_HOSTNAME=keycloak-auth
+      - KEYCLOAK_USER=admin
+    depends_on:
+      - keycloak-db
+
+    command: "start-dev"
 
   mariadb-mail:
     image: mariadb
