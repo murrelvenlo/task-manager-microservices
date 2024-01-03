@@ -26,8 +26,8 @@ services:
     environment:
 #      - KEYCLOAK_ADMIN=admin
 #      - KEYCLOAK_ADMIN_PASSWORD=admin
-      - DB_VENDOR=keycloak-db
-      - DB_ADDR=postgres
+      - DB_VENDOR=postgres
+      - DB_ADDR=keycloak-db
       - DB_DATABASE=keycloak_db
       - DB_SCHEMA=admin
       - DB_USER=admin
