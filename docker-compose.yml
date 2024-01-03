@@ -14,21 +14,29 @@ services:
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: keycloak_db
     ports:
-      - '5432:5432'
+      - '5433:5432'
 
   keycloak:
-    image: quay.io/keycloak/keycloak:23.0.3
+    image: jboss/keycloak:latest
     ports:
-      - "8085:8080"
+      - "9090:8080"
+    restart: unless-stopped
+    volumes:
+      - postgres_kc_data:/var/lib/postgresql/data
     environment:
-      - KEYCLOAK_ADMIN=admin
-      - KEYCLOAK_ADMIN_PASSWORD=admin
+#      - KEYCLOAK_ADMIN=admin
+#      - KEYCLOAK_ADMIN_PASSWORD=admin
       - DB_VENDOR=keycloak-db
+      - DB_ADDR=postgres
+      - DB_DATABASE=keycloak_db
       - DB_SCHEMA=admin
       - DB_USER=admin
       - DB_PASSWORD=admin
-      - KEYCLOAK_HOSTNAME=keycloak-auth
+      - DB_PORT=5433
       - KEYCLOAK_USER=admin
+      - PROXY_ADDRESS_FORWARDING=true
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
       - KEYCLOAK_CLIENT_SECRET=${KEYCLOAK_CLIENTSECRET}
       - KEYCLOAK_CLIENT_ID=${KEYCLOAK_CLIENTID}
     depends_on:
@@ -115,3 +123,4 @@ volumes:
   mongo_task_data:
   mysql_team_data:
   mariadb_mail_data:
+  postgres_kc_data:
