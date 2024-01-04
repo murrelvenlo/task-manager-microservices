@@ -24,7 +24,6 @@ public class Task
     private String description;
     private Date creationDate;
     private Date dueDate;
-    private boolean isProfessional;
-    private String userCode;
+    private String rNumber;
     private TaskStatus status;
 }

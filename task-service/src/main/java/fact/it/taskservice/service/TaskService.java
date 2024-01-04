@@ -17,5 +17,5 @@ public interface TaskService
     void deleteTask(String taskId);
     void deleteTaskByCode(String taskCode);
     void updateTaskByCode(String taskCode, TaskRequest taskRequest);
-    List<TaskResponse> getAllTasksByUserCode(String userCode);
+    List<TaskResponse> getAllTasksByrNumber(String rNumber);
 }

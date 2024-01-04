@@ -11,17 +11,12 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserResponse {
-    private Long userId;
-    private String userCode;
+public class MemberDto {
+    private String rNumber;
     private String firstName;
     private String lastName;
     private String username;
     private String email;
     private String password;
-    private String phone;
-    private String taskCode;
-    private String role;
-    private String token;
     private List<String> taskCodes;
 }

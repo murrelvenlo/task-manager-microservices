@@ -1,6 +1,7 @@
 package fact.it.teamservice.service.Impl;
 
 import fact.it.teamservice.dto.DepartmentResponse;
+import fact.it.teamservice.dto.MailDto;
 import fact.it.teamservice.dto.MemberRequest;
 import fact.it.teamservice.dto.MemberResponse;
 import fact.it.teamservice.exception.DuplicateEntityException;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +34,7 @@ public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final TeamRepository teamRepository;
     private final ModelMapper mapper;
+    private final WebClient webClient;
     @Override
     public Member addMember(MemberRequest memberRequest) {
         // Check if the department name is provided
@@ -61,6 +64,7 @@ public class MemberServiceImpl implements MemberService {
                 .build();
 
         memberRepository.save(newMember);
+        sendUserCreationEmail(memberRequest);
         return newMember;
     }
 
@@ -155,5 +159,22 @@ public class MemberServiceImpl implements MemberService {
 //            stringBuilder.append(randomDigit);
 //        }
 //        return stringBuilder.toString();
+    }
+
+    private void sendUserCreationEmail(MemberRequest memberRequest) {
+        // Create a MailDto with user information
+        MailDto mailDto = MailDto.builder()
+                .recipient(memberRequest.getEmail())
+                .messageSubject("Member Created")
+                .messageBody("Dear " + memberRequest.getFirstName() + ",\nYour account has been successfully created.")
+                .build();
+
+        // Send the email using WebClient to the mail-service
+        webClient.post()
+                .uri("http://localhost:8082/api/email/send-email")
+                .bodyValue(mailDto)
+                .retrieve()
+                .toBodilessEntity()
+                .block();
     }
 }

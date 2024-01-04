@@ -1,27 +1,22 @@
-package fact.it.taskservice.dto;
+package fact.it.teamservice.dto;
 
-import fact.it.taskservice.model.TaskStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
 import java.util.Date;
-import java.util.UUID;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TaskRequest
-{
+public class TaskDTO {
     private String taskCode;
     private String name;
     private String description;
     private Date creationDate;
     private Date dueDate;
     private String rNumber;
-    private TaskStatus status;
-    private String email;
+    private TaskStatusDTO status;
 }

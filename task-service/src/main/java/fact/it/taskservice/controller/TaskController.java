@@ -51,7 +51,7 @@ public class TaskController {
     }
 
     @PutMapping("/update/{taskCode}")
-    public ResponseEntity<String> updateUserTask(
+    public ResponseEntity<String> updateMemberTask(
             @PathVariable String taskCode,
             @RequestBody TaskRequest taskRequest) {
         try {
@@ -74,9 +74,9 @@ public class TaskController {
         }
     }
 
-    @GetMapping("/getByUserCode/{userCode}")
-    public ResponseEntity<List<TaskResponse>> getAllTasksByUserCode(@PathVariable String userCode) {
-        List<TaskResponse> tasks = taskService.getAllTasksByUserCode(userCode);
+    @GetMapping("/getByrNumber/{rNumber}")
+    public ResponseEntity<List<TaskResponse>> getAllTasksByrNumber(@PathVariable String rNumber) {
+        List<TaskResponse> tasks = taskService.getAllTasksByrNumber(rNumber);
 
         if (tasks.isEmpty()) {
             return ResponseEntity.noContent().build(); // or ResponseEntity.ok(Collections.emptyList());

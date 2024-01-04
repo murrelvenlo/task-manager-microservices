@@ -6,19 +6,22 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-import java.util.UUID;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDto {
-    private UUID userCode;
+public class MemberResponse {
+    private Long memberId;
+    private String userCode;
     private String firstName;
     private String lastName;
     private String username;
     private String email;
     private String password;
     private String phone;
+    private String taskCode;
+    private String role;
+    private String token;
     private List<String> taskCodes;
 }

@@ -5,13 +5,12 @@ import fact.it.taskservice.exception.TaskNotFoundException;
 import fact.it.taskservice.exception.UserNotFoundException;
 import fact.it.taskservice.model.Task;
 import fact.it.taskservice.repository.TaskRepository;
-import fact.it.taskservice.service.TaskUserService;
+import fact.it.taskservice.service.TaskMemberService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -22,19 +21,19 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class TaskUserServiceImpl implements TaskUserService {
+public class TaskMemberServiceImpl implements TaskMemberService {
     private final TaskRepository taskRepository;
     private final ModelMapper mapper;
     private final WebClient webClient;
     @Override
-    public void createTask(TaskRequest taskRequest, String userCode) {
-        UserDto user = webClient.get()
-                .uri("http://localhost:8081/api/users/code/{userCode}", userCode)
+    public void createTask(TaskRequest taskRequest, String rNumber) {
+        MemberDto member = webClient.get()
+                .uri("http://localhost:8081/api/member/get/{rNumber}", rNumber)
                 .retrieve()
-                .bodyToMono(UserDto.class)
+                .bodyToMono(MemberDto.class)
                 .block();
 
-        if (user != null){
+        if (member != null){
 
             // Get the current date and time
             LocalDateTime now = LocalDateTime.now();
@@ -49,14 +48,13 @@ public class TaskUserServiceImpl implements TaskUserService {
                     .creationDate(currentDateAndTime)
                     .dueDate(new Date())
                     .description(taskRequest.getDescription())
-                    .isProfessional(taskRequest.isProfessional())
-                    .userCode(userCode)
+                    .rNumber(rNumber)
                     .build();
 
             taskRepository.save(task);
-            sendTaskCreationEmail(taskRequest, userCode);
+            sendTaskCreationEmail(taskRequest, rNumber);
         } else {
-            throw new UserNotFoundException("User not found for userCode: " + userCode);
+            throw new UserNotFoundException("Member not found for r_number: " + rNumber);
         }
     }
 
@@ -69,25 +67,25 @@ public class TaskUserServiceImpl implements TaskUserService {
     }
 
     @Override
-    public void sendTaskCreationEmail(TaskRequest taskRequest, String userCode) {
+    public void sendTaskCreationEmail(TaskRequest taskRequest, String rNumber) {
 
         try {
             // Retrieve user information for the associated task
-            UserDto user = webClient.get()
-                    .uri("http://localhost:8081/api/users/code/{userCode}", userCode)
+            MemberDto member = webClient.get()
+                    .uri("http://localhost:8081/api/member/get/{rNumber}", rNumber)
                     .retrieve()
-                    .bodyToMono(UserDto.class)
+                    .bodyToMono(MemberDto.class)
                     .block();
 
             // Log user information
-            System.out.println("Retrieved user: " + user);
+            System.out.println("Retrieved member: " + member);
 
             // Create a MailDto with task and user information
-            assert user != null;
+            assert member != null;
             MailDto mailDto = MailDto.builder()
-                    .recipient(user.getEmail())
+                    .recipient(member.getEmail())
                     .messageSubject("Task Created")
-                    .messageBody("Dear " + user.getFirstName() + ",\nA new task has been created: " + taskRequest.getName())
+                    .messageBody("Dear " + member.getFirstName() + ",\nA new task has been created: " + taskRequest.getName())
                     .build();
 
             // Send the email using WebClient to the mail-service
@@ -104,14 +102,14 @@ public class TaskUserServiceImpl implements TaskUserService {
     }
 
     @Override
-    public void updateTask(String taskCode, TaskRequest taskRequest, String userCode) {
-        UserDto user = webClient.get()
-                .uri("http://localhost:8081/api/users/code/{userCode}", userCode)
+    public void updateTask(String taskCode, TaskRequest taskRequest, String rNumber) {
+        MemberDto member = webClient.get()
+                .uri("http://localhost:8081/api/member/get/{rNumber}", rNumber)
                 .retrieve()
-                .bodyToMono(UserDto.class)
+                .bodyToMono(MemberDto.class)
                 .block();
 
-        if (user != null) {
+        if (member != null) {
             Optional<Task> optionalTask = Optional.ofNullable(taskRepository.findTaskByTaskCode(taskCode));
             if (optionalTask.isPresent()) {
                 Task task = optionalTask.get();
@@ -119,15 +117,14 @@ public class TaskUserServiceImpl implements TaskUserService {
                 task.setStatus(taskRequest.getStatus());
                 task.setDueDate(taskRequest.getDueDate());
                 task.setDescription(taskRequest.getDescription());
-                task.setProfessional(taskRequest.isProfessional());
-                task.setUserCode(userCode); // Ensure the userCode is updated if necessary
+                task.setRNumber(rNumber); // Ensure the rNumber is updated if necessary
 
                 taskRepository.save(task);
             } else {
                 throw new TaskNotFoundException("Task not found for taskCode: " + taskCode);
             }
         } else {
-            throw new UserNotFoundException("User not found for userCode: " + userCode);
+            throw new UserNotFoundException("Member not found for r_number: " + rNumber);
         }
     }
 
@@ -142,30 +139,28 @@ public class TaskUserServiceImpl implements TaskUserService {
     }
 
     @Override
-    public UserTaskResponse getUserWithTask(String taskId) {
+    public MemberTaskResponse getMemberWithTask(String taskId) {
         Optional<Task> task = taskRepository.findById(taskId);
         if(task.isPresent()){
             Task taskData = task.get();
-            UserDto user = getUserByCode(taskData.getUserCode());
+            MemberDto member = getMemberByrNumber(taskData.getRNumber());
 
-            if (user != null){
-                return UserTaskResponse.builder()
+            if (member != null){
+                return MemberTaskResponse.builder()
                         .id(taskData.getId())
                         .taskCode(taskData.getTaskCode())
                         .name(taskData.getName())
                         .description(taskData.getDescription())
                         .creationDate(taskData.getCreationDate())
                         .dueDate(taskData.getDueDate())
-                        .isProfessional(taskData.isProfessional())
                         .status(taskData.getStatus())
-                        .userCode(user.getUserCode().toString())
-                        .firstName(user.getFirstName())
-                        .lastName(user.getLastName())
-                        .username(user.getUsername())
-                        .email(user.getEmail())
-                        .password(user.getPassword())
-                        .phone(user.getPhone())
-                        .taskCodes(user.getTaskCodes())
+                        .rNumber(member.getRNumber())
+                        .firstName(member.getFirstName())
+                        .lastName(member.getLastName())
+                        .username(member.getUsername())
+                        .email(member.getEmail())
+                        .password(member.getPassword())
+                        .taskCodes(member.getTaskCodes())
                         .build();
             }
         }
@@ -173,11 +168,11 @@ public class TaskUserServiceImpl implements TaskUserService {
     }
 
 
-    public UserDto getUserByCode(String userCode) {
+    public MemberDto getMemberByrNumber(String rNumber) {
         return webClient.get()
-                .uri("http://localhost:8081/api/users/code/{userCode}", userCode)
+                .uri("http://localhost:8081/api/member/get/{rNumber}", rNumber)
                 .retrieve()
-                .bodyToMono(UserDto.class)
+                .bodyToMono(MemberDto.class)
                 .block();
     }
 }

@@ -10,8 +10,8 @@ import java.util.UUID;
 public interface TaskRepository extends MongoRepository<Task, String> {
     List<Task> findByTaskCodeIn(List<String> taskCode);
     Task findTaskByTaskCode(String taskCode);
-    Task findTaskByUserCode(String userCode);
-    List<Task> findAllByUserCode(String userCode);
+    Task findTaskByrNumber(String userCode);
+    List<Task> findAllByrNumber(String rNumber);
     List<Task> findByDueDateBetween(Date startDate, Date endDate);
     List<Task> findByCreationDateBetween(Date startDate, Date endDate);
 }

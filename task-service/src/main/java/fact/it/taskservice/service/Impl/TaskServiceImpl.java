@@ -7,13 +7,9 @@ import fact.it.taskservice.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -34,8 +30,7 @@ public class TaskServiceImpl implements TaskService {
                 .creationDate(new Date())
                 .dueDate(new Date())
                 .description(taskRequest.getDescription())
-                .isProfessional(taskRequest.isProfessional())
-                .userCode(taskRequest.getUserCode() != null ? taskRequest.getUserCode().toString() : null)
+                .rNumber(taskRequest.getRNumber() != null ? taskRequest.getRNumber() : null)
                 .build();
 
         taskRepository.save(task);
@@ -86,7 +81,6 @@ public class TaskServiceImpl implements TaskService {
             if(taskRequest.getDueDate() != null) {
                 task.setDueDate(taskRequest.getDueDate());
             }
-            task.setProfessional(taskRequest.isProfessional()); // Assuming isProfessional is not null
 
             taskRepository.save(task);
         }
@@ -105,7 +99,6 @@ public class TaskServiceImpl implements TaskService {
             task.setStatus(taskRequest.getStatus());
             task.setDueDate(taskRequest.getDueDate());
             task.setDescription(taskRequest.getDescription());
-            task.setProfessional(taskRequest.isProfessional());
 
             taskRepository.save(task);
         } else {
@@ -114,8 +107,8 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<TaskResponse> getAllTasksByUserCode(String userCode) {
-        List<Task> tasks = taskRepository.findAllByUserCode(userCode);
+    public List<TaskResponse> getAllTasksByrNumber(String rNumber) {
+        List<Task> tasks = taskRepository.findAllByrNumber(rNumber);
 
         if (!tasks.isEmpty()) {
             List<TaskResponse> taskResponses = tasks.stream()
@@ -151,25 +144,25 @@ public class TaskServiceImpl implements TaskService {
     }
 
 
-    private void sendTaskCreationEmail(TaskRequest taskRequest, UUID userCode) {
+    private void sendTaskCreationEmail(TaskRequest taskRequest, String rNumber) {
 
         try {
-            // Retrieve user information for the associated task
-            UserDto user = webClient.get()
-                    .uri("http://localhost:8081/api/users/code/{userCode}", userCode)
+            // Retrieve member information for the associated task
+            MemberDto member = webClient.get()
+                    .uri("http://localhost:8081/api/member/get/{rNumber}", rNumber)
                     .retrieve()
-                    .bodyToMono(UserDto.class)
+                    .bodyToMono(MemberDto.class)
                     .block();
 
             // Log user information
-            System.out.println("Retrieved user: " + user);
+            System.out.println("Retrieved member: " + member);
 
             // Create a MailDto with task and user information
-            assert user != null;
+            assert member != null;
             MailDto mailDto = MailDto.builder()
-                    .recipient(user.getEmail())
+                    .recipient(member.getEmail())
                     .messageSubject("Task Created")
-                    .messageBody("Dear " + user.getFirstName() + ",\nA new task has been created: " + taskRequest.getName())
+                    .messageBody("Dear " + member.getFirstName() + ",\nA new task has been created: " + taskRequest.getName())
                     .build();
 
             // Send the email using WebClient to the mail-service

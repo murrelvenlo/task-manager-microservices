@@ -2,29 +2,28 @@ package fact.it.taskservice.controller;
 
 import fact.it.taskservice.dto.TaskRequest;
 import fact.it.taskservice.dto.TaskResponse;
-import fact.it.taskservice.dto.UserDto;
-import fact.it.taskservice.dto.UserTaskResponse;
+import fact.it.taskservice.dto.MemberDto;
+import fact.it.taskservice.dto.MemberTaskResponse;
 import fact.it.taskservice.exception.TaskNotFoundException;
 import fact.it.taskservice.exception.UserNotFoundException;
-import fact.it.taskservice.service.TaskUserService;
+import fact.it.taskservice.service.TaskMemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/task")
 @RequiredArgsConstructor
-public class TaskUserController {
+public class TaskMemberController {
 
-    private final TaskUserService taskUserService;
-    @PostMapping("/add/{userCode}")
-    public ResponseEntity<String> createTask(@RequestBody TaskRequest taskRequest, @PathVariable String userCode) {
+    private final TaskMemberService taskMemberService;
+    @PostMapping("/add/{rNumber}")
+    public ResponseEntity<String> createTask(@RequestBody TaskRequest taskRequest, @PathVariable String rNumber) {
         try {
-            taskUserService.createTask(taskRequest, userCode);
+            taskMemberService.createTask(taskRequest, rNumber);
             return ResponseEntity.ok("Task, " + taskRequest.getName() + ", created successfully");
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -34,13 +33,13 @@ public class TaskUserController {
     }
     @GetMapping("/all")
     public List<TaskResponse> getAllTasks() {
-        return taskUserService.getAllTasks();
+        return taskMemberService.getAllTasks();
     }
 
-    @PutMapping("/update/{taskCode}/{userCode}")
-    public ResponseEntity<String> updateTask(@PathVariable String taskCode, @RequestBody TaskRequest taskRequest, @PathVariable String userCode) {
+    @PutMapping("/update/{taskCode}/{rNumber}")
+    public ResponseEntity<String> updateTask(@PathVariable String taskCode, @RequestBody TaskRequest taskRequest, @PathVariable String rNumber) {
         try {
-            taskUserService.updateTask(taskCode, taskRequest, userCode);
+            taskMemberService.updateTask(taskCode, taskRequest, rNumber);
             return ResponseEntity.ok("Task, " + taskRequest.getName() + ", updated successfully");
         } catch (TaskNotFoundException | UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -50,11 +49,11 @@ public class TaskUserController {
     }
 
 
-    @GetMapping("/user/{userCode}")
-    public ResponseEntity<UserDto> getUserByCode(@PathVariable String userCode) {
-        UserDto user = taskUserService.getUserByCode(userCode);
-        if (user != null) {
-            return ResponseEntity.ok(user);
+    @GetMapping("/member/{rNumber}")
+    public ResponseEntity<MemberDto> getMemberByrNumber(@PathVariable String rNumber) {
+        MemberDto member = taskMemberService.getMemberByrNumber(rNumber);
+        if (member != null) {
+            return ResponseEntity.ok(member);
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -62,7 +61,7 @@ public class TaskUserController {
     @DeleteMapping("/delete/{taskId}")
     public ResponseEntity<String> deleteTask(@PathVariable String taskId) {
         try {
-            taskUserService.deleteTask(taskId);
+            taskMemberService.deleteTask(taskId);
             return new ResponseEntity<>("Task deleted successfully", HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -70,7 +69,7 @@ public class TaskUserController {
     }
 
     @GetMapping("/get/{taskId}")
-    public UserTaskResponse getUserTask(@PathVariable String taskId) {
-        return taskUserService.getUserWithTask(taskId);
+    public MemberTaskResponse getMemberTask(@PathVariable String taskId) {
+        return taskMemberService.getMemberWithTask(taskId);
     }
 }

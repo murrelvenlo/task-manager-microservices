@@ -17,15 +17,15 @@ services:
       - '5433:5432'
 
   keycloak:
-    image: jboss/keycloak:latest
+    image: quay.io/keycloak/keycloak
     ports:
-      - "9090:8080"
+      - "8085:8080"
     restart: unless-stopped
     volumes:
       - postgres_kc_data:/var/lib/postgresql/data
     environment:
-#      - KEYCLOAK_ADMIN=admin
-#      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
       - DB_VENDOR=postgres
       - DB_ADDR=keycloak-db
       - DB_DATABASE=keycloak_db
@@ -34,9 +34,8 @@ services:
       - DB_PASSWORD=admin
       - DB_PORT=5433
       - KEYCLOAK_USER=admin
-      - PROXY_ADDRESS_FORWARDING=true
-      - KEYCLOAK_USER=admin
       - KEYCLOAK_PASSWORD=admin
+      - PROXY_ADDRESS_FORWARDING=true
       - KEYCLOAK_CLIENT_SECRET=${KEYCLOAK_CLIENTSECRET}
       - KEYCLOAK_CLIENT_ID=${KEYCLOAK_CLIENTID}
     depends_on:
@@ -44,17 +43,14 @@ services:
 
     command: "start-dev"
 
-  mariadb-mail:
-    image: mariadb
+  mysql-mail:
+    image: mysql:latest
     ports:
       - "3306:3306"
     volumes:
-      - mariadb_mail_data:/var/lib/mysql
+      - mysql_mail_data:/var/lib/mysql
     environment:
-        MYSQL_ROOT_PASSWORD: venlomj
-        MYSQL_DATABASE: email_service_db
-        MYSQL_USER: venlomj
-        MYSQL_PASSWORD: venlomj
+      MYSQL_ROOT_PASSWORD: abc123
 
   mysql-team:
     image: mysql:latest
@@ -67,27 +63,27 @@ services:
 
   email-service:
     depends_on:
-      - mariadb-mail
+      - mysql-mail
     image: venlomj/email-service
     ports:
       - "8082:8082"
     environment:
-      MYSQL_DB_HOST: mariadb-mail
-      MYSQL_ROOT_PORT: 3306
-      MYSQL_ROOT_PASSWORD: venlomj
-      MYSQL_DATABASE: mail_service_db
-      MYSQL_USER: venlomj
-      MYSQL_PASSWORD: venlomj
+      MYSQL_DB_USERNAME: root
+      MYSQL_DB_PASSWORD: abc123
+      MYSQL_DB_HOST: mysql-mail
+      MYSQL_DB_PORT: 3306
 
   team-service:
     depends_on:
       - mysql-team
       - email-service
+      - task-service
     image: venlomj/task-team-service
     ports:
       - "8081:8081"
     environment:
       MAIL_SERVICE_BASEURL: email-service:8082
+      TASK_SERVICE_BASEURL: task-service:8080
       MYSQL_DB_USERNAME: root
       MYSQL_DB_PASSWORD: abc123
       MYSQL_DB_HOST: mysql-team
@@ -122,5 +118,5 @@ services:
 volumes:
   mongo_task_data:
   mysql_team_data:
-  mariadb_mail_data:
+  mysql_mail_data:
   postgres_kc_data:
