@@ -13,6 +13,7 @@ import fact.it.teamservice.service.DepartmentService;
 import fact.it.teamservice.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -25,6 +26,7 @@ import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class MemberServiceImpl implements MemberService {
 
     private final DepartmentRepository departmentRepository;
@@ -32,6 +34,8 @@ public class MemberServiceImpl implements MemberService {
     private final TeamRepository teamRepository;
     private final ModelMapper mapper;
     private final WebClient webClient;
+    @Value("${emailservice.baseurl}")
+    private String emailServiceBaseUrl;
     @Override
     public Member addMember(MemberRequest memberRequest) {
         // Check if the department name is provided
@@ -65,7 +69,7 @@ public class MemberServiceImpl implements MemberService {
                 .build();
 
         memberRepository.save(newMember);
-        sendUserCreationEmail(memberRequest);
+        sendMemberCreationEmail(memberRequest);
         return newMember;
     }
 
@@ -168,17 +172,9 @@ public class MemberServiceImpl implements MemberService {
                 .collect(Collectors.joining());
 
         return "r"+code;
-//        StringBuilder stringBuilder = new StringBuilder();
-//        Random random = new Random();
-//
-//        for (int i = 0; i < 7; i++) {
-//            int randomDigit = random.nextInt(10);
-//            stringBuilder.append(randomDigit);
-//        }
-//        return stringBuilder.toString();
     }
 
-    private void sendUserCreationEmail(MemberRequest memberRequest) {
+    private void sendMemberCreationEmail(MemberRequest memberRequest) {
         // Create a MailDto with user information
         MailDto mailDto = MailDto.builder()
                 .recipient(memberRequest.getEmail())
@@ -188,7 +184,7 @@ public class MemberServiceImpl implements MemberService {
 
         // Send the email using WebClient to the mail-service
         webClient.post()
-                .uri("http://localhost:8082/api/email/send-email")
+                .uri("http://" + emailServiceBaseUrl + "/api/email/send-email")
                 .bodyValue(mailDto)
                 .retrieve()
                 .toBodilessEntity()

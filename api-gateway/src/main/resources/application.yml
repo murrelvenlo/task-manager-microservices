@@ -30,78 +30,23 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: user-service
-          uri: http://${USER_SERVICE_BASEURL:localhost:8081}
+        - id: member-service
+          uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
           predicates:
-            - Path=/api/users/**
-
-        - id: user-task-service
-          uri: http://${USER_SERVICE_BASEURL:localhost:8081}
+            - Path=/api/member/**
+        - id: team-service
+          uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
           predicates:
-            - Path=/api/user-task/**
-
-        - id: authentication
-          uri: http://${USER_SERVICE_BASEURL:localhost:8081}
+            - Path=/api/member/**
+        - id: member-task-service
+          uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
           predicates:
-            - Path=/api/auth/**
-
-#        - id: user-service-register
-#          uri: http://${USER_SERVICE_BASEURL:localhost:8081}
-#          predicates:
-#            - Path=/api/auth/register
-#            - Method=POST
-#        - id: user-service-login
-#          uri: http://${USER_SERVICE_BASEURL:localhost:8081}
-#          predicates:
-#            - Path=/api/auth/login
-#            - Method=POST
-#          filters:
-#            - AuthenticationFilter
-#        - id: user-service-validate-token
-#          uri: http://${USER_SERVICE_BASEURL:localhost:8081}
-#          predicates:
-#            - Path=/api/auth/validate-token
-#            - Method=POST
-#        - id: user-service-get
-#          uri: http://${USER_SERVICE_BASEURL:localhost:8081}
-#          predicates:
-#            - Path=/api/auth/get/all
-#            - Method=GET
-#        - id: user-service-create
-#          uri: http://${USER_SERVICE_BASEURL:localhost:8081}
-#          predicates:
-#            - Path=/api/task/add/**
-#            - Method=POST
-#        - id: task-service-create
-#          uri: http://${USER_SERVICE_BASEURL:localhost:8081}
-#          predicates:
-#            - Path=/api/user-task/addForCurrentUser
-#            - Method=POST
-#          filters:
-#            - SetPath=/api/task/add/{userCode}
-#        - id: task-service-all
-#          uri: http://${TASK_SERVICE_BASEURL:localhost:8080}
-#          predicates:
-#            - Path=/api/task/get/all
-#            - Method=GET
-#        - id: task-service-update
-#          uri: http://${TASK_SERVICE_BASEURL:localhost:8080}
-#          predicates:
-#            - Path=/api/task/update/**
-#            - Method=PUT
-#          filters:
-#            - SetPath=/api/task/update/{taskCode}/{userCode}
-#        - id: task-service-delete
-#          uri: http://${TASK_SERVICE_BASEURL:localhost:8080}
-#          predicates:
-#            - Path=/api/task/delete/**
-#            - Method=DELETE
-#          filters:
-#            - SetPath=/api/task/delete/{taskId}
-#        - id: task-service-get
-#          uri: http://${TASK_SERVICE_BASEURL:localhost:8080}
-#          predicates:
-#            - Path=/api/task/get/**
-#            - Method=GET
-#          filters:
-#            - SetPath=/api/task/get/{taskId}
+            - Path=/api/member-task/**
+        - id: department-service
+          uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
+          predicates:
+            - Path=/api/dep/**
+        - id: task-service
+          uri: http://${TASK_SERVICE_BASEURL:localhost:8080}
+          predicates:
+            - Path=/api/tasks/**

@@ -13,8 +13,10 @@ import fact.it.teamservice.service.TeamService;
 import jakarta.persistence.NonUniqueResultException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -29,6 +31,7 @@ public class TeamServiceImpl implements TeamService {
     // Map to store counters for each first letter
     private static final Map<Character, Integer> teamNumberCounters = new HashMap<>();
     private final ModelMapper modelMapper;
+    private final WebClient webClient;
 
 
     private final TeamRepository teamRepository;
@@ -183,4 +186,21 @@ public class TeamServiceImpl implements TeamService {
         int randomIndex = random.nextInt(teacherNames.size());
         return teacherNames.get(randomIndex);
     }
+
+//    private void sendTeamAddedEmail(MemberRequest memberRequest) {
+//        // Create a MailDto with user information
+//        MailDto mailDto = MailDto.builder()
+//                .recipient(memberRequest.getEmail())
+//                .messageSubject("Assigned to team")
+//                .messageBody("Dear " + memberRequest.getFirstName() + ",\nYou are added to a team")
+//                .build();
+//
+//        // Send the email using WebClient to the mail-service
+//        webClient.post()
+//                .uri("http://" + emailServiceBaseUrl + "/api/email/send-email")
+//                .bodyValue(mailDto)
+//                .retrieve()
+//                .toBodilessEntity()
+//                .block();
+//    }
 }

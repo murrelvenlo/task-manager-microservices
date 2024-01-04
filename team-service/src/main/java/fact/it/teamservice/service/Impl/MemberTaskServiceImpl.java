@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -33,6 +34,10 @@ public class MemberTaskServiceImpl implements MemberTaskService {
     private final WebClient webClient;
 
     private static final Logger log = LoggerFactory.getLogger(MemberTaskServiceImpl.class);
+    @Value("${emailservice.baseurl}")
+    private String emailServiceBaseUrl;
+    @Value("${taskservice.baseurl}")
+    private String taskServiceBaseUrl;
 
 
     @Override
@@ -45,7 +50,7 @@ public class MemberTaskServiceImpl implements MemberTaskService {
 
             try {
                 webClient.post()
-                        .uri("http://localhost:8080/api/tasks/add")
+                        .uri("http://" + taskServiceBaseUrl + "/api/tasks/add")
                         .bodyValue(taskDto)
                         .retrieve()
                         .toBodilessEntity()
@@ -86,7 +91,7 @@ public class MemberTaskServiceImpl implements MemberTaskService {
 
             try {
                 webClient.put()
-                        .uri("http://localhost:8080/api/tasks/update/{taskCode}", taskCode)
+                        .uri("http://" + taskServiceBaseUrl + "/api/tasks/update/{taskCode}", taskCode)
                         .bodyValue(taskDto)
                         .retrieve()
                         .toBodilessEntity()
@@ -114,7 +119,7 @@ public class MemberTaskServiceImpl implements MemberTaskService {
         if (member != null) {
             try {
                 webClient.delete()
-                        .uri("http://localhost:8080/api/tasks/delete/{taskCode}", taskCode)
+                        .uri("http://" + taskServiceBaseUrl + "/api/tasks/delete/{taskCode}", taskCode)
                         .retrieve()
                         .bodyToMono(Void.class)
                         .block();
@@ -139,7 +144,7 @@ public class MemberTaskServiceImpl implements MemberTaskService {
                 // Make a request to the task-service to get tasks by rNumber
                 List<TaskDTO> userTasks = webClient
                         .get()
-                        .uri("http://localhost:8080/api/tasks/getByrNumber/{rNumber}", rNumber)
+                        .uri("http://" + taskServiceBaseUrl + "/api/tasks/getByrNumber/{rNumber}", rNumber)
                         .retrieve()
                         .bodyToFlux(TaskDTO.class)
                         .collectList()
@@ -179,7 +184,7 @@ public class MemberTaskServiceImpl implements MemberTaskService {
 
             // Send the email using WebClient to the mail-service
             webClient.post()
-                    .uri("http://localhost:8082/api/email/send-email")
+                    .uri("http://" + emailServiceBaseUrl + "/api/email/send-email")
                     .bodyValue(mailDto)
                     .retrieve()
                     .toBodilessEntity()
@@ -195,7 +200,7 @@ public class MemberTaskServiceImpl implements MemberTaskService {
 
             // Send the email using WebClient to the mail-service
             webClient.post()
-                    .uri("http://localhost:8082/api/email/send-email")
+                    .uri("http://" + emailServiceBaseUrl + "/api/email/send-email")
                     .bodyValue(mailDto)
                     .retrieve()
                     .toBodilessEntity()
@@ -208,7 +213,7 @@ public class MemberTaskServiceImpl implements MemberTaskService {
     public List<TaskDTO> getAllTask() {
         List<TaskDTO> tasks = webClient
                 .get()
-                .uri("http://localhost:8080/api/tasks/get/all")
+                .uri("http://" +taskServiceBaseUrl + "/api/tasks/get/all")
                 .retrieve()
                 .bodyToFlux(TaskDTO.class)
                 .collectList()
@@ -226,7 +231,7 @@ public class MemberTaskServiceImpl implements MemberTaskService {
 
         // Send the email using WebClient to the mail-service
         webClient.post()
-                .uri("http://localhost:8082/api/email/send-email")
+                .uri("http://" + emailServiceBaseUrl + "/api/email/send-email")
                 .bodyValue(mailDto)
                 .retrieve()
                 .toBodilessEntity()

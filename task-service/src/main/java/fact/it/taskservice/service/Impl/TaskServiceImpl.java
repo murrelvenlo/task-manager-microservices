@@ -7,6 +7,7 @@ import fact.it.taskservice.repository.TaskRepository;
 import fact.it.taskservice.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -23,6 +24,10 @@ public class TaskServiceImpl implements TaskService {
     private final ModelMapper mapper;
     private final MongoTemplate mongoTemplate;
     private final WebClient webClient;
+    @Value("${emailservice.baseurl}")
+    private String emailServiceBaseUrl;
+    @Value("${teamservice.baseurl}")
+    private String teamServiceBaseUrl;
     @Override
     public void createTask(TaskRequest taskRequest) {
         // Check if a task with the same name and status already exists
@@ -164,7 +169,7 @@ public class TaskServiceImpl implements TaskService {
         try {
             // Retrieve member information for the associated task
             MemberDto member = webClient.get()
-                    .uri("http://localhost:8081/api/member/get/{rNumber}", rNumber)
+                    .uri("http://" + teamServiceBaseUrl + "/api/member/get/{rNumber}", rNumber)
                     .retrieve()
                     .bodyToMono(MemberDto.class)
                     .block();
@@ -182,7 +187,7 @@ public class TaskServiceImpl implements TaskService {
 
             // Send the email using WebClient to the mail-service
             webClient.post()
-                    .uri("http://localhost:8082/api/email/send-email")
+                    .uri("http://" + emailServiceBaseUrl + "/api/email/send-email")
                     .bodyValue(mailDto)
                     .retrieve()
                     .toBodilessEntity()
