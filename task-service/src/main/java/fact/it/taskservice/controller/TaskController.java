@@ -87,7 +87,7 @@ public class TaskController {
         List<TaskResponse> tasks = taskService.getAllTasksByrNumber(rNumber);
 
         if (tasks.isEmpty()) {
-            return ResponseEntity.noContent().build(); // or ResponseEntity.ok(Collections.emptyList());
+            return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.ok(tasks);
         }

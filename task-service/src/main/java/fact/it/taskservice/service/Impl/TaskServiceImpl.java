@@ -30,8 +30,14 @@ public class TaskServiceImpl implements TaskService {
             throw new DuplicateEntityException("Task", "Task with the same name and status already exists");
         }
 
+        // Generate a random 7-digit number
+        String randomDigits = generateRandomDigits(7);
+
+        // Build the taskCode with the "task-" prefix
+        String taskCode = "task-" + randomDigits;
+
         Task task = Task.builder()
-                .taskCode(String.valueOf(UUID.randomUUID()))
+                .taskCode(taskCode)
                 .name(taskRequest.getName())
                 .status(taskRequest.getStatus())
                 .creationDate(LocalDateTime.now())
@@ -41,8 +47,9 @@ public class TaskServiceImpl implements TaskService {
                 .build();
 
         taskRepository.save(task);
-//        sendTaskCreationEmail(taskRequest, taskRequest.getTaskCode());
+        // sendTaskCreationEmail(taskRequest, taskCode);
     }
+
 
     @Override
     public List<TaskResponse> getAllTasks() {
@@ -184,6 +191,16 @@ public class TaskServiceImpl implements TaskService {
             // Log the exception
             e.printStackTrace();
         }
+    }
+
+    // generate random digits
+    private String generateRandomDigits(int n) {
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder(n);
+        for (int i = 0; i < n; i++) {
+            sb.append(random.nextInt(10));
+        }
+        return sb.toString();
     }
 
 }
