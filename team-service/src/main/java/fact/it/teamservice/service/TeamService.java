@@ -9,7 +9,7 @@ import java.util.List;
 public interface TeamService {
 
     Team createTeam(TeamRequest teamRequest);
-    List<TeamResponse> getAllTeams();
+    List<TeamOnlyResponse> getAllTeams();
     TeamResponse findTeamByNumber(String teamNumber);
     void updateTeam(String teamNumber, TeamRequest teamRequest);
     void deleteTeamByNumber(String teamNumber);

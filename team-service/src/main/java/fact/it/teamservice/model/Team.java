@@ -19,11 +19,9 @@ public class Team {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true)
     private String teamNumber;
     private String name;
     @OneToMany(mappedBy = "team")
     private List<Member> members = new ArrayList<>();
-
-    @ElementCollection
-    private List<String> teacherNames = new ArrayList<>();
 }

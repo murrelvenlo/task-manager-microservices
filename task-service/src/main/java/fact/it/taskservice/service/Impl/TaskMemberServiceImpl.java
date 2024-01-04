@@ -45,7 +45,7 @@ public class TaskMemberServiceImpl implements TaskMemberService {
                     .taskCode(String.valueOf(UUID.randomUUID()))
                     .name(taskRequest.getName())
                     .status(taskRequest.getStatus())
-                    .creationDate(currentDateAndTime)
+                    .creationDate(now)
                     .dueDate(new Date())
                     .description(taskRequest.getDescription())
                     .rNumber(rNumber)

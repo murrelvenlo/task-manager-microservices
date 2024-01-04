@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
@@ -20,7 +21,7 @@ public class TaskResponse
     private String taskCode;
     private String name;
     private String description;
-    private Date creationDate;
+    private LocalDateTime creationDate;
     private Date dueDate;
     private String rNumber;
     private TaskStatus status;

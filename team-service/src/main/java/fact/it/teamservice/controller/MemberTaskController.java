@@ -91,7 +91,7 @@ public class MemberTaskController {
     public ResponseEntity<List<TaskDTO>> getAllTasksForMember(@PathVariable String rNumber) {
         try {
             Member member = memberRepository.findByrNumber(rNumber);
-            List<TaskDTO> tasks = memberTaskService.getTasksForMemberByrNumber(rNumber);
+            List<TaskDTO> tasks = memberTaskService.getTasksForMemberByrNumber(member.getRNumber());
 
             if (tasks.isEmpty()) {
                 return ResponseEntity.noContent().build();

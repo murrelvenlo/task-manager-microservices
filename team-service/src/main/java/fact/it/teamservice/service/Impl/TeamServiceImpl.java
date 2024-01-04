@@ -37,20 +37,15 @@ public class TeamServiceImpl implements TeamService {
     @Override
     @Transactional
     public Team createTeam(TeamRequest teamRequest) {
-        // Select a random teacher from the list
-        String randomTeacherName = getRandomTeacherName();
+        // Generate 10 random digits
+        StringBuilder randomDigits = new StringBuilder();
+        Random random = new Random();
+        for (int i = 0; i < 10; i++) {
+            randomDigits.append(random.nextInt(10));
+        }
 
-        // Extract the first letter
-        char firstLetter = randomTeacherName.charAt(0);
-
-        // Get the counter for the first letter from the map, or initialize to 1 if not present
-        int teamNumberCounter = teamNumberCounters.getOrDefault(firstLetter, 1);
-
-        // Generate the team number based on the first letter and counter
-        String teamNumber = Character.toUpperCase(firstLetter) + String.valueOf(teamNumberCounter);
-
-        // Increment the counter for the next team with the same first letter
-        teamNumberCounters.put(firstLetter, teamNumberCounter + 1);
+        // Construct the team number
+        String teamNumber = "team-" + randomDigits.toString();
 
         // Check if a team with the same name already exists
         if (teamRepository.existsByName(teamRequest.getName())) {
@@ -61,7 +56,6 @@ public class TeamServiceImpl implements TeamService {
         Team newTeam = Team.builder()
                 .teamNumber(teamNumber)
                 .name(teamRequest.getName())
-                .teacherNames(Collections.singletonList(randomTeacherName))
                 .build();
 
         teamRepository.save(newTeam);
@@ -79,10 +73,10 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public List<TeamResponse> getAllTeams() {
+    public List<TeamOnlyResponse> getAllTeams() {
         List<Team> teams = teamRepository.findAll();
         return teams.stream()
-                .map(team -> modelMapper.map(team, TeamResponse.class))
+                .map(team -> modelMapper.map(team, TeamOnlyResponse.class))
                 .collect(Collectors.toList());
     }
     @Override
@@ -182,8 +176,6 @@ public class TeamServiceImpl implements TeamService {
         // save changes
         teamRepository.save(team);
     }
-
-
 
     private String getRandomTeacherName() {
         // Use Random to select a random index from the teacherNames list

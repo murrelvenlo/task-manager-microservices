@@ -1,9 +1,6 @@
 package fact.it.teamservice.service.Impl;
 
-import fact.it.teamservice.dto.DepartmentResponse;
-import fact.it.teamservice.dto.MailDto;
-import fact.it.teamservice.dto.MemberRequest;
-import fact.it.teamservice.dto.MemberResponse;
+import fact.it.teamservice.dto.*;
 import fact.it.teamservice.exception.DuplicateEntityException;
 import fact.it.teamservice.exception.EntityNotFoundException;
 import fact.it.teamservice.model.Department;
@@ -54,6 +51,10 @@ public class MemberServiceImpl implements MemberService {
             throw new DuplicateEntityException("Member", "Member with the same RNumber, " + memberRequest.getRNumber() + ", already exists");
         }
 
+        // Check if a member with the same email address already exists
+        if (memberRepository.existsByEmail(memberRequest.getEmail())) {
+            throw new DuplicateEntityException("Member", "Member with the same email address, " + memberRequest.getEmail() + ", already exists");
+        }
 
         Member newMember = Member.builder()
                 .rNumber(generateRNumber())
@@ -67,6 +68,7 @@ public class MemberServiceImpl implements MemberService {
         sendUserCreationEmail(memberRequest);
         return newMember;
     }
+
 
     @Override
     public List<MemberResponse> getAllMembers() {
@@ -86,13 +88,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void updateMember(String rNumber, MemberRequest request) {
-        // Check if the department with the given name exists
-        Optional<Department> departmentOptional = Optional.ofNullable(departmentRepository.findByName(request.getDepName()));
-        // If the department doesn't exist, throw an exception
-        Department department = departmentOptional.orElseThrow(() ->
-                new EntityNotFoundException("Department", "Department with name " + request.getDepName() + " not found"));
-
+    public void updateMember(String rNumber, UpdateMemberRequest request) {
         // Retrieve the existing member
         Member existingMember = memberRepository.findByrNumber(rNumber);
         if (existingMember == null) {
@@ -103,11 +99,11 @@ public class MemberServiceImpl implements MemberService {
         existingMember.setFirstName(request.getFirstName());
         existingMember.setLastName(request.getLastName());
         existingMember.setEmail(request.getEmail());
-        existingMember.setDepartment(department);
 
         // Save the updated member back to the repository
         memberRepository.save(existingMember);
     }
+
 
     @Override
     @Transactional
@@ -120,6 +116,27 @@ public class MemberServiceImpl implements MemberService {
         }
 
     }
+
+    @Override
+    @Transactional
+    public void removeMemberFromTeam(Long teamId, String rNumber) {
+        // Find the team by ID
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new EntityNotFoundException("Team", "Team with id " + teamId + " not found"));
+
+        // Find the member by RNumber
+        Member member = memberRepository.findByrNumber(rNumber);
+        if (member == null) {
+            throw new EntityNotFoundException("Member", "Member with RNumber " + rNumber + " not found");
+        }
+
+        // Remove the association between the member and the team
+        member.setTeam(null);
+
+        // Save the updated member
+        memberRepository.save(member);
+    }
+
 
     @Override
     public void addMemberToTeam(String teamNumber, String rNumber) {

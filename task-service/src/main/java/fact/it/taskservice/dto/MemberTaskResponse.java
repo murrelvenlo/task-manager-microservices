@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class MemberTaskResponse {
     private String taskCode;
     private String name;
     private String description;
-    private Date creationDate;
+    private LocalDateTime creationDate;
     private Date dueDate;
     private TaskStatus status;
     private String rNumber;

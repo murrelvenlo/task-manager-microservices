@@ -1,9 +1,6 @@
 package fact.it.teamservice.controller;
 
-import fact.it.teamservice.dto.MemberRequest;
-import fact.it.teamservice.dto.MemberToTeamRequest;
-import fact.it.teamservice.dto.TeamRequest;
-import fact.it.teamservice.dto.TeamResponse;
+import fact.it.teamservice.dto.*;
 import fact.it.teamservice.exception.EntityNotFoundException;
 import fact.it.teamservice.model.Team;
 import fact.it.teamservice.service.TeamService;
@@ -48,7 +45,7 @@ public class TeamController {
     }
 
     @GetMapping("/get/all")
-    public List<TeamResponse> getAllTeams() {
+    public List<TeamOnlyResponse> getAllTeams() {
         return teamService.getAllTeams();
     }
 
@@ -68,6 +65,7 @@ public class TeamController {
         Type listType = new TypeToken<List<MemberToTeamRequest>>() {}.getType();
         return modelMapper.map(memberRequests, listType);
     }
+
 
     @GetMapping("/get/{teamNumber}")
     public TeamResponse findTeamByNumber(@PathVariable String teamNumber) {

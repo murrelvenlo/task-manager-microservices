@@ -1,9 +1,6 @@
 package fact.it.teamservice.controller;
 
-import fact.it.teamservice.dto.DepartmentRequest;
-import fact.it.teamservice.dto.DepartmentResponse;
-import fact.it.teamservice.dto.MemberRequest;
-import fact.it.teamservice.dto.MemberResponse;
+import fact.it.teamservice.dto.*;
 import fact.it.teamservice.exception.EntityCreationException;
 import fact.it.teamservice.exception.EntityNotFoundException;
 import fact.it.teamservice.model.Member;
@@ -74,7 +71,7 @@ public class MemberController {
         }
     }
     @PutMapping("/update/{rNumber}")
-    public ResponseEntity<?> updateMember(@PathVariable String rNumber, @RequestBody MemberRequest request) {
+    public ResponseEntity<?> updateMember(@PathVariable String rNumber, @RequestBody UpdateMemberRequest request) {
         try {
             memberService.updateMember(rNumber, request);
             return ResponseEntity.ok("Member updated successfully.");
@@ -84,4 +81,17 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating member with RNumber: " + rNumber);
         }
     }
+
+    @DeleteMapping("/remove-from-team")
+    public ResponseEntity<String> removeMemberFromTeam(@RequestParam Long teamId, @RequestParam String rNumber) {
+        try {
+            memberService.removeMemberFromTeam(teamId, rNumber);
+            return ResponseEntity.ok("Member removed from team successfully.");
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error removing member from team: " + e.getMessage());
+        }
+    }
+
 }

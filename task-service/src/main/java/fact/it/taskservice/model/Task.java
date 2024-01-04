@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
@@ -22,7 +23,7 @@ public class Task
     private String taskCode;
     private String name;
     private String description;
-    private Date creationDate;
+    private LocalDateTime creationDate;
     private Date dueDate;
     private String rNumber;
     private TaskStatus status;

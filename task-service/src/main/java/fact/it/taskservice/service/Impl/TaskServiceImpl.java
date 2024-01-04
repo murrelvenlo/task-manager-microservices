@@ -1,6 +1,7 @@
 package fact.it.taskservice.service.Impl;
 
 import fact.it.taskservice.dto.*;
+import fact.it.taskservice.exception.DuplicateEntityException;
 import fact.it.taskservice.model.Task;
 import fact.it.taskservice.repository.TaskRepository;
 import fact.it.taskservice.service.TaskService;
@@ -10,6 +11,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,11 +25,16 @@ public class TaskServiceImpl implements TaskService {
     private final WebClient webClient;
     @Override
     public void createTask(TaskRequest taskRequest) {
+        // Check if a task with the same name and status already exists
+        if (taskRepository.existsByNameAndStatus(taskRequest.getName(), taskRequest.getStatus())) {
+            throw new DuplicateEntityException("Task", "Task with the same name and status already exists");
+        }
+
         Task task = Task.builder()
                 .taskCode(String.valueOf(UUID.randomUUID()))
                 .name(taskRequest.getName())
                 .status(taskRequest.getStatus())
-                .creationDate(new Date())
+                .creationDate(LocalDateTime.now())
                 .dueDate(new Date())
                 .description(taskRequest.getDescription())
                 .rNumber(taskRequest.getRNumber() != null ? taskRequest.getRNumber() : null)
@@ -135,9 +142,10 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void deleteTaskByCode(String taskCode) {
-        Optional<Task> optionalTask = Optional.ofNullable(taskRepository.findTaskByTaskCode(taskCode));
-        if (optionalTask.isPresent()){
-            taskRepository.deleteById(taskCode);
+        Task task = taskRepository.findTaskByTaskCode(taskCode);
+
+        if (task != null){
+            taskRepository.deleteByTaskCode(taskCode);
         } else {
             throw new RuntimeException("Task not found with task code: " + taskCode);
         }

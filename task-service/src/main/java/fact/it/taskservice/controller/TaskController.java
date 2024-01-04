@@ -3,6 +3,9 @@ package fact.it.taskservice.controller;
 import fact.it.taskservice.dto.TaskDto;
 import fact.it.taskservice.dto.TaskRequest;
 import fact.it.taskservice.dto.TaskResponse;
+import fact.it.taskservice.exception.DuplicateEntityException;
+import fact.it.taskservice.model.Task;
+import fact.it.taskservice.repository.TaskRepository;
 import fact.it.taskservice.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,13 +20,18 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class TaskController {
     private final TaskService taskService;
+    private final TaskRepository taskRepository;
 
     @PostMapping("/add")
     public ResponseEntity<String> createTask(@RequestBody TaskRequest taskRequest) {
-        String taskName = taskRequest.getName();
-        taskService.createTask(taskRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Task '" + taskName + "' created successfully!");
+        try {
+            taskService.createTask(taskRequest);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Task '" + taskRequest.getName() + "' created successfully!");
+        } catch (DuplicateEntityException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Error creating task: " + ex.getMessage());
+        }
     }
+
 
     @GetMapping("/get/all")
     public List<TaskResponse> getAllTasks() {
@@ -74,7 +82,7 @@ public class TaskController {
         }
     }
 
-    @GetMapping("/getByrNumber/{rNumber}")
+    @GetMapping("/get-by-rNumber/{rNumber}")
     public ResponseEntity<List<TaskResponse>> getAllTasksByrNumber(@PathVariable String rNumber) {
         List<TaskResponse> tasks = taskService.getAllTasksByrNumber(rNumber);
 

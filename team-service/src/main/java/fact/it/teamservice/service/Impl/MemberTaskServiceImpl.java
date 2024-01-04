@@ -11,8 +11,10 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -54,9 +56,21 @@ public class MemberTaskServiceImpl implements MemberTaskService {
                 sendUsTaskCreationEmail(member);
 
 
+            } catch (WebClientResponseException e) {
+                // Handle WebClientResponseException to get more details about the error
+                String responseBody = e.getResponseBodyAsString();
+                HttpStatus statusCode = (HttpStatus) e.getStatusCode();
+
+                // Log or process the exception details
+                log.error("Error adding task for member {}: Status Code - {}, Response - {}", rNumber, statusCode, responseBody);
+
+                // Propagate the exception with more information to the calling code
+                throw new RuntimeException("Exception adding task for member: " + statusCode + ", " + responseBody);
             } catch (Exception e) {
-                // Handle exceptions appropriately
+                // Handle other exceptions appropriately
                 log.error("Exception adding task for member: {}", e.getMessage());
+
+                // Propagate the exception to the calling code
                 throw new RuntimeException("Exception adding task for member: " + e.getMessage());
             }
         }
