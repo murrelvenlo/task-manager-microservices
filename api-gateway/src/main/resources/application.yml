@@ -30,7 +30,7 @@ spring:
     gateway:
       routes:
         - id: add-task
-          uri: ${TASK_SERVICE_BASEURL:http://localhost:8080}
+          uri: http://${TASK_SERVICE_BASEURL:localhost:8080}
           predicates:
             - Path=/api/tasks/add
             - Method=POST
@@ -38,7 +38,7 @@ spring:
             - SetPath=/api/tasks/add
 
         - id: update-task
-          uri: ${TASK_SERVICE_BASEURL:http://localhost:8080}
+          uri: http://${TASK_SERVICE_BASEURL:localhost:8080}
           predicates:
             - Path=/api/tasks/update/**
             - Method=PUT
@@ -46,7 +46,7 @@ spring:
             - SetPath=/api/tasks/update/{taskCode}
 
         - id: delete-task
-          uri: ${TASK_SERVICE_BASEURL:http://localhost:8080}
+          uri: http://${TASK_SERVICE_BASEURL:localhost:8080}
           predicates:
             - Path=/api/tasks/delete/**
             - Method=DELETE
@@ -54,7 +54,7 @@ spring:
             - SetPath=/api/tasks/delete/{taskCode}
 
         - id: get-all-tasks
-          uri: ${TASK_SERVICE_BASEURL:http://localhost:8080}
+          uri: http://${TASK_SERVICE_BASEURL:localhost:8080}
           predicates:
             - Path=/api/tasks/get/all
             - Method=GET
@@ -62,7 +62,7 @@ spring:
             - SetPath=/api/tasks/get/all
 
         - id: get-tasks-by-rNumber
-          uri: ${TASK_SERVICE_BASEURL:http://localhost:8080}
+          uri: http://${TASK_SERVICE_BASEURL:localhost:8080}
           predicates:
             - Path=/api/tasks/get-by-rNumber/**
             - Method=GET
@@ -70,7 +70,7 @@ spring:
             - SetPath=/api/tasks/get-by-rNumber/{rNumber}
 
         - id: add-task-for-member
-          uri: ${TEAM_SERVICE_BASEURL:http://localhost:8081}
+          uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
           predicates:
             - Path=/api/member-task/add-for-member/**
             - Method=POST
@@ -78,7 +78,7 @@ spring:
             - SetPath=/api/member-task/add-for-member/{rNumber}
 
         - id: update-member
-          uri: ${TEAM_SERVICE_BASEURL:http://localhost:8081}
+          uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
           predicates:
             - Path=/api/member/update/**
             - Method=PUT
@@ -86,7 +86,7 @@ spring:
             - SetPath=/api/member/update/{rNumber}
 
         - id: delete-member
-          uri: ${TEAM_SERVICE_BASEURL:http://localhost:8081}
+          uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
           predicates:
             - Path=/api/member/delete/**
             - Method=DELETE
@@ -94,7 +94,7 @@ spring:
             - SetPath=/api/member/delete/{rNumber}
 
         - id: get-all-members
-          uri: ${TEAM_SERVICE_BASEURL:http://localhost:8081}
+          uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
           predicates:
             - Path=/api/member/get/all
             - Method=GET
@@ -102,7 +102,7 @@ spring:
             - SetPath=/api/member/get/all
 
         - id: get-member-by-rNumber
-          uri: ${TEAM_SERVICE_BASEURL:http://localhost:8081}
+          uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
           predicates:
             - Path=/api/member/get/**
             - Method=GET
@@ -110,7 +110,7 @@ spring:
             - SetPath=/api/member/get/{rNumber}
 
         - id: remove-member-from-team
-          uri: ${TEAM_SERVICE_BASEURL:http://localhost:8081}
+          uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
           predicates:
             - Path=/api/member/remove-from-team
             - Method=DELETE
@@ -118,7 +118,7 @@ spring:
             - SetPath=/api/member/remove-from-team/
 
         - id: add-department
-          uri: ${TEAM_SERVICE_BASEURL:http://localhost:8081}
+          uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
           predicates:
             - Path=/api/dep/add
             - Method=POST
@@ -126,7 +126,7 @@ spring:
             - SetPath=/api/dep/add
 
         - id: get-all-departments
-          uri: ${TEAM_SERVICE_BASEURL:http://localhost:8081}
+          uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
           predicates:
             - Path=/api/dep/get/all
             - Method=GET
@@ -134,7 +134,7 @@ spring:
             - SetPath=/api/dep/get/all
 
         - id: get-department-by-code
-          uri: ${TEAM_SERVICE_BASEURL:http://localhost:8081}
+          uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
           predicates:
             - Path=/api/dep/get/**
             - Method=GET
@@ -142,7 +142,7 @@ spring:
             - SetPath=/api/dep/get/{depCode}
 
         - id: add-team
-          uri: ${TEAM_SERVICE_BASEURL:http://localhost:8081}
+          uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
           predicates:
             - Path=/api/team/add
             - Method=POST
@@ -150,7 +150,7 @@ spring:
             - SetPath=/api/team/add
 
         - id: assign-members-to-team
-          uri: ${TEAM_SERVICE_BASEURL:http://localhost:8081}
+          uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
           predicates:
             - Path=/api/team/assign-members/**
             - Method=POST
@@ -158,7 +158,7 @@ spring:
             - SetPath=/api/team/assign-members
 
         - id: update-team
-          uri: ${TEAM_SERVICE_BASEURL:http://localhost:8081}
+          uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
           predicates:
             - Path=/api/team/update/**
             - Method=PUT
@@ -166,7 +166,7 @@ spring:
             - SetPath=/api/team/update/{teamNumber}
 
         - id: get-all-teams
-          uri: ${TEAM_SERVICE_BASEURL:http://localhost:8081}
+          uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
           predicates:
             - Path=/api/team/get/all
             - Method=GET
@@ -174,7 +174,7 @@ spring:
             - SetPath=/api/team/get/all
 
         - id: get-team-by-teamNumber
-          uri: ${TEAM_SERVICE_BASEURL:http://localhost:8081}
+          uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
           predicates:
             - Path=/api/team/get/**
             - Method=GET
@@ -182,7 +182,7 @@ spring:
             - SetPath=/api/team/get/{teamNumber}
 
         - id: delete-team
-          uri: ${TEAM_SERVICE_BASEURL:http://localhost:8081}
+          uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
           predicates:
             - Path=/api/team/delete/**
             - Method=DELETE

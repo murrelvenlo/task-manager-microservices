@@ -44,45 +44,6 @@ public class MemberTaskServiceImpl implements MemberTaskService {
     @Value("${taskservice.baseurl}")
     private String taskServiceBaseUrl;
 
-    @PostConstruct
-    public void loadData() {
-        if (memberRepository.count() <= 0) {
-            Member member = Member.builder()
-                    .rNumber("r0781309")
-                    .firstName("Murrel")
-                    .lastName("Venlo")
-                    .email("venlo.mj@hotmail.nl")
-                    .department(new Department())
-                    .taskCode("task-123456")
-                    .team(new Team())
-                    .build();
-
-            Member member1 = Member.builder()
-                    .rNumber("r0781309")
-                    .firstName("Murrel")
-                    .lastName("Venlo")
-                    .email("venlo.mj@hotmail.nl")
-                    .department(new Department())
-                    .taskCode("task-0114738")
-                    .team(new Team())
-                    .build();
-
-            Member member2 = Member.builder()
-                    .rNumber("r0123456")
-                    .firstName("Jurmen")
-                    .lastName("Prijor")
-                    .email("venlo.mj@hotmail.nl")
-                    .department(new Department())
-                    .taskCode("task-0246139")
-                    .team(new Team())
-                    .build();
-
-            memberRepository.save(member);
-            memberRepository.save(member1);
-            memberRepository.save(member2);
-        }
-    }
-
 
 
     @Override
