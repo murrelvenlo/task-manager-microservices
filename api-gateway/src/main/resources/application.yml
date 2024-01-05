@@ -29,23 +29,122 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: member-service
-          uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
+        - id: add-task
+          uri: ${TASK_SERVICE_BASEURL:http://localhost:8080}
           predicates:
-            - Path=/api/member/**
-        - id: team-service
-          uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
+            - Path=/api/tasks/add
+            - Method=POST
+
+        - id: update-task
+          uri: ${TASK_SERVICE_BASEURL:http://localhost:8080}
           predicates:
-            - Path=/api/member/**
-        - id: member-task-service
-          uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
+            - Path=/api/tasks/update/**
+            - Method=PUT
+
+        - id: delete-task
+          uri: ${TASK_SERVICE_BASEURL:http://localhost:8080}
           predicates:
-            - Path=/api/member-task/**
-        - id: department-service
-          uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
+            - Path=/api/tasks/delete/**
+            - Method=DELETE
+
+        - id: get-all-tasks
+          uri: ${TASK_SERVICE_BASEURL:http://localhost:8080}
           predicates:
-            - Path=/api/dep/**
-        - id: task-service
-          uri: http://${TASK_SERVICE_BASEURL:localhost:8080}
+            - Path=/api/tasks/get/all
+            - Method=GET
+
+        - id: get-tasks-by-rNumber
+          uri: ${TASK_SERVICE_BASEURL:http://localhost:8080}
           predicates:
-            - Path=/api/tasks/**
+            - Path=/api/tasks/get-by-rNumber/**
+            - Method=GET
+
+        - id: add-task-for-member
+          uri: ${TEAM_SERVICE_BASEURL:http://localhost:8081}
+          predicates:
+            - Path=/api/member-task/add-for-member/**
+            - Method=POST
+
+        - id: update-member
+          uri: ${TEAM_SERVICE_BASEURL:http://localhost:8081}
+          predicates:
+            - Path=/api/member/update/**
+            - Method=PUT
+
+        - id: delete-member
+          uri: ${TEAM_SERVICE_BASEURL:http://localhost:8081}
+          predicates:
+            - Path=/api/member/delete/**
+            - Method=DELETE
+
+        - id: get-all-members
+          uri: ${TEAM_SERVICE_BASEURL:http://localhost:8081}
+          predicates:
+            - Path=/api/member/get/all
+            - Method=GET
+
+        - id: get-member-by-rNumber
+          uri: ${TEAM_SERVICE_BASEURL:http://localhost:8081}
+          predicates:
+            - Path=/api/member/get/**
+            - Method=GET
+
+        - id: remove-member-from-team
+          uri: ${TEAM_SERVICE_BASEURL:http://localhost:8081}
+          predicates:
+            - Path=/api/member/remove-from-team
+            - Method=DELETE
+
+        - id: add-department
+          uri: ${TEAM_SERVICE_BASEURL:http://localhost:8081}
+          predicates:
+            - Path=/api/dep/add
+            - Method=POST
+
+        - id: get-all-departments
+          uri: ${TEAM_SERVICE_BASEURL:http://localhost:8081}
+          predicates:
+            - Path=/api/dep/get/all
+            - Method=GET
+
+        - id: get-department-by-code
+          uri: ${TEAM_SERVICE_BASEURL:http://localhost:8081}
+          predicates:
+            - Path=/api/dep/get/**
+            - Method=GET
+
+        - id: add-team
+          uri: ${TEAM_SERVICE_BASEURL:http://localhost:8081}
+          predicates:
+            - Path=/api/team/add
+            - Method=POST
+
+        - id: assign-members-to-team
+          uri: ${TEAM_SERVICE_BASEURL:http://localhost:8081}
+          predicates:
+            - Path=/api/team/assign-members/**
+            - Method=POST
+
+        - id: update-team
+          uri: ${TEAM_SERVICE_BASEURL:http://localhost:8081}
+          predicates:
+            - Path=/api/team/update/**
+            - Method=PUT
+
+        - id: get-all-teams
+          uri: ${TEAM_SERVICE_BASEURL:http://localhost:8081}
+          predicates:
+            - Path=/api/team/get/all
+            - Method=GET
+
+        - id: get-team-by-teamNumber
+          uri: ${TEAM_SERVICE_BASEURL:http://localhost:8081}
+          predicates:
+            - Path=/api/team/get/**
+            - Method=GET
+
+        - id: delete-team
+          uri: ${TEAM_SERVICE_BASEURL:http://localhost:8081}
+          predicates:
+            - Path=/api/team/delete/**
+            - Method=DELETE
