@@ -44,7 +44,7 @@ services:
     ports:
       - "8081:8081"
     environment:
-      MAIL_SERVICE_BASEURL: email-service:8082
+      EMAIL_SERVICE_BASEURL: email-service:8082
       TASK_SERVICE_BASEURL: task-service:8080
       MYSQL_DB_USERNAME: root
       MYSQL_DB_PASSWORD: abc123
@@ -59,6 +59,7 @@ services:
     ports:
       - "8080:8080"
     environment:
+      EMAIL_SERVICE_BASEURL: email-service:8082
       MONGODB_PORT: 27017
       MONGODB_HOST: mongo-tasks
 
@@ -74,7 +75,7 @@ services:
       - task-service
     restart: on-failure
     environment:
-      USER_SERVICE_BASEURL: team-service:8081
+      TEAM_SERVICE_BASEURL: team-service:8081
       TASK_SERVICE_BASEURL: task-service:8080
 
 volumes:
