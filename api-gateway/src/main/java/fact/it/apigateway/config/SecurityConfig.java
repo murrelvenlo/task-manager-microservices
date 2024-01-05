@@ -18,8 +18,8 @@ public class SecurityConfig {
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         return http
                 .authorizeExchange(exchange -> exchange
-                        .pathMatchers(HttpMethod.GET, "/api/member/add").permitAll()
-                        .pathMatchers(HttpMethod.POST, "/api/team/get/all").permitAll()
+                        .pathMatchers(HttpMethod.GET,  "/team/get/all").permitAll()
+                        .pathMatchers(HttpMethod.POST,"/member/add").permitAll()
                         .anyExchange().authenticated())
                 .oauth2ResourceServer(oauth -> oauth.jwt(withDefaults()))
                 .build();
