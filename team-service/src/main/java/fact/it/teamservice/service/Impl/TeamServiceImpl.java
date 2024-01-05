@@ -10,6 +10,7 @@ import fact.it.teamservice.repository.DepartmentRepository;
 import fact.it.teamservice.repository.MemberRepository;
 import fact.it.teamservice.repository.TeamRepository;
 import fact.it.teamservice.service.TeamService;
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.NonUniqueResultException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -32,6 +33,33 @@ public class TeamServiceImpl implements TeamService {
     private static final Map<Character, Integer> teamNumberCounters = new HashMap<>();
     private final ModelMapper modelMapper;
     private final WebClient webClient;
+
+    @PostConstruct
+    public void loadData() {
+        if (teamRepository.count() <= 0) {
+            Team team = Team.builder()
+                    .name("Team 1")
+                    .teamNumber("team-0123456789")
+                    .members(new ArrayList<>())
+                    .build();
+
+            Team team1 = Team.builder()
+                    .name("Team 2")
+                    .teamNumber("team-1234567860")
+                    .members(new ArrayList<>())
+                    .build();
+
+            Team team2 = Team.builder()
+                    .name("Team 3")
+                    .teamNumber("team-5123406789")
+                    .members(new ArrayList<>())
+                    .build();
+
+            teamRepository.save(team);
+            teamRepository.save(team1);
+            teamRepository.save(team2);
+        }
+    }
 
 
     private final TeamRepository teamRepository;

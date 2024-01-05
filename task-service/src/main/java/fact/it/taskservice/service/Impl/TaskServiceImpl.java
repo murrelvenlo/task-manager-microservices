@@ -5,6 +5,7 @@ import fact.it.taskservice.exception.DuplicateEntityException;
 import fact.it.taskservice.model.Task;
 import fact.it.taskservice.repository.TaskRepository;
 import fact.it.taskservice.service.TaskService;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,6 +29,41 @@ public class TaskServiceImpl implements TaskService {
     private String emailServiceBaseUrl;
     @Value("${teamservice.baseurl}")
     private String teamServiceBaseUrl;
+    @PostConstruct
+    public void loadData() {
+        if (taskRepository.count() <= 0) {
+            Task task = Task.builder()
+                    .taskCode("task-123456")
+                    .name("Microservice Spring Boot")
+                    .description("Develop a Microservice backend for a project, with a minimum of 3 microservices for individual work or 4 for team projects of two. Choose a theme excluding Orders or Inventory, and create a demo video illustrating the project's structure, functionality, and features.")
+                    .rNumber("r0781309")
+                    .creationDate(LocalDateTime.now())
+                    .dueDate(new Date("2024-01-07T11:11:11.717+00:00"))
+                    .build();
+
+            Task task1 = Task.builder()
+                    .taskCode("task-0114738")
+                    .name("Exam AI")
+                    .description("Study for Exam AI.")
+                    .rNumber("r0781309")
+                    .creationDate(LocalDateTime.now())
+                    .dueDate(new Date("2024-01-11T11:11:11.717+00:00"))
+                    .build();
+
+            Task task2 = Task.builder()
+                    .taskCode("task-0246139")
+                    .name("Project 4.0")
+                    .description("Description for Project 4.0.")
+                    .rNumber("r0123456")
+                    .creationDate(LocalDateTime.now())
+                    .dueDate(new Date("2024-01-16T11:11:11.717+00:00"))
+                    .build();
+
+            taskRepository.save(task);
+            taskRepository.save(task1);
+            taskRepository.save(task2);
+        }
+    }
     @Override
     public void createTask(TaskRequest taskRequest) {
         // Check if a task with the same name and status already exists

@@ -3,10 +3,13 @@ package fact.it.teamservice.service.Impl;
 import fact.it.teamservice.dto.MailDto;
 import fact.it.teamservice.dto.MemberResponse;
 import fact.it.teamservice.dto.TaskDTO;
+import fact.it.teamservice.model.Department;
 import fact.it.teamservice.model.Member;
+import fact.it.teamservice.model.Team;
 import fact.it.teamservice.repository.MemberRepository;
 import fact.it.teamservice.repository.TeamRepository;
 import fact.it.teamservice.service.MemberTaskService;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -18,8 +21,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -38,6 +43,46 @@ public class MemberTaskServiceImpl implements MemberTaskService {
     private String emailServiceBaseUrl;
     @Value("${taskservice.baseurl}")
     private String taskServiceBaseUrl;
+
+    @PostConstruct
+    public void loadData() {
+        if (memberRepository.count() <= 0) {
+            Member member = Member.builder()
+                    .rNumber("r0781309")
+                    .firstName("Murrel")
+                    .lastName("Venlo")
+                    .email("venlo.mj@hotmail.nl")
+                    .department(new Department())
+                    .taskCode("task-123456")
+                    .team(new Team())
+                    .build();
+
+            Member member1 = Member.builder()
+                    .rNumber("r0781309")
+                    .firstName("Murrel")
+                    .lastName("Venlo")
+                    .email("venlo.mj@hotmail.nl")
+                    .department(new Department())
+                    .taskCode("task-0114738")
+                    .team(new Team())
+                    .build();
+
+            Member member2 = Member.builder()
+                    .rNumber("r0123456")
+                    .firstName("Jurmen")
+                    .lastName("Prijor")
+                    .email("venlo.mj@hotmail.nl")
+                    .department(new Department())
+                    .taskCode("task-0246139")
+                    .team(new Team())
+                    .build();
+
+            memberRepository.save(member);
+            memberRepository.save(member1);
+            memberRepository.save(member2);
+        }
+    }
+
 
 
     @Override
