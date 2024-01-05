@@ -103,8 +103,7 @@ jobs:
         run: docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Docker Build
-        run: docker build --build-arg KEYCLOAK_CLIENTID=${{ secrets.KEYCLOAK_CLIENTID }} --build-arg KEYCLOAK_CLIENTSECRET=${{ secrets.KEYCLOAK_CLIENTSECRET }} -t ${{ secrets.DOCKER_USER }}/ede-api-gateway:latest ./api-gateway
-
+        run: docker build --build-arg GOOGLE_CLIENTID=${{ secrets.GOOGLE_CLIENTID }} --build-arg GOOGLE_CLIENTSECRET=${{ secrets.GOOGLE_CLIENTSECRET }} -t ${{ secrets.DOCKER_USER }}/ede-api-gateway:latest ./api-gateway
 
       - name: Docker Build
         run: docker build -t ${{ secrets.DOCKER_USER }}/app.jar:latest ./api-gateway

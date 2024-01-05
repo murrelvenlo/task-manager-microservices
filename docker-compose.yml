@@ -5,44 +5,6 @@ services:
       - "27018:27017"
     volumes:
       - mongo_task_data:/data/db
-
-  keycloak-db:
-    image: postgres
-    environment:
-      POSTGRES_HOST_AUTH: trust
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
-      POSTGRES_DB: keycloak_db
-    ports:
-      - '5433:5432'
-
-  keycloak:
-    image: quay.io/keycloak/keycloak
-    ports:
-      - "8085:8080"
-    restart: unless-stopped
-    volumes:
-      - postgres_kc_data:/var/lib/postgresql/data
-    environment:
-      - KEYCLOAK_ADMIN=admin
-      - KEYCLOAK_ADMIN_PASSWORD=admin
-      - DB_VENDOR=postgres
-      - DB_ADDR=keycloak-db
-      - DB_DATABASE=keycloak_db
-      - DB_SCHEMA=admin
-      - DB_USER=admin
-      - DB_PASSWORD=admin
-      - DB_PORT=5433
-      - KEYCLOAK_USER=admin
-      - KEYCLOAK_PASSWORD=admin
-      - PROXY_ADDRESS_FORWARDING=true
-      - KEYCLOAK_CLIENT_SECRET=${KEYCLOAK_CLIENTSECRET}
-      - KEYCLOAK_CLIENT_ID=${KEYCLOAK_CLIENTID}
-    depends_on:
-      - keycloak-db
-
-    command: "start-dev"
-
   mysql-mail:
     image: mysql:latest
     ports:
@@ -119,4 +81,3 @@ volumes:
   mongo_task_data:
   mysql_team_data:
   mysql_mail_data:
-  postgres_kc_data:

@@ -14,19 +14,18 @@ spring:
     oauth2:
       client:
         registration:
-          keycloak:
-            client-id: ${KEYCLOAK_CLIENTID}
-            client-secret: ${KEYCLOAK_CLIENTSECRET}
-            scope: openid, profile, email, username
+          google:
+            client-id: ${GOOGLE_CLIENTID}
+            client-secret: ${GOOGLE_CLIENTSECRET}
+            scope: openid,profile,email
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8085/realms/my-task-manager-realm
-          jwk-set-uri: //localhost:8085/realms/my-task-manager-realm/protocol/openid-connect/certs
-
-
+          issuer-uri: https://accounts.google.com
+          jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs
   main:
     web-application-type: reactive
     allow-bean-definition-overriding: true
+
   cloud:
     gateway:
       routes:
