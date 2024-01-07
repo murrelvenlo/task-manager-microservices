@@ -23,24 +23,16 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: abc123
 
-  postgres-assignment:
-    image: postgres:latest
-    restart: unless-stopped
-    volumes:
-      - postgres_assignment_data:/data/postgres
-    expose:
-      - "5431"
+  mongo-assignment:
+    image: mongo:latest
     ports:
-      - "5431:5431"
-    command: -p 5431
-    environment:
-      POSTGRES_USER: venlomj
-      POSTGRES_PASSWORD: 1234
-      POSTGRES_DB: assignment_db
+      - "27019:27017"
+    volumes:
+      - mongo_assignment_data:/data/db
 
   assignment-service:
     depends_on:
-      - postgres-assignment
+      - mongo-assignment
       - task-service
       - email-service
       - team-service
@@ -48,7 +40,8 @@ services:
     ports:
       - "8084:8084"
     environment:
-      environment:
+      MONGODB_PORT: 27017
+      MONGODB_HOST: mongo-assignment
       TEAM_SERVICE_BASEURL: team-service:8081
       TASK_SERVICE_BASEURL: task-service:8080
       EMAIL_SERVICE_BASEURL: email-service:8082
@@ -112,4 +105,4 @@ volumes:
   mongo_task_data:
   mysql_team_data:
   mysql_mail_data:
-  postgres_assignment_data:
+  mongo_assignment_data:

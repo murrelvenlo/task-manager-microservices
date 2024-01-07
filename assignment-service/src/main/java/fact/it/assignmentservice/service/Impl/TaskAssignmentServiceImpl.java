@@ -4,7 +4,6 @@ import fact.it.assignmentservice.dto.*;
 import fact.it.assignmentservice.model.TaskAssignment;
 import fact.it.assignmentservice.repository.TaskAssignmentRepository;
 import fact.it.assignmentservice.service.TaskAssignmentService;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -78,7 +77,7 @@ public class TaskAssignmentServiceImpl implements TaskAssignmentService {
         // Fetch the existing assignment
         TaskAssignment existingAssignment = assignmentRepository.findByAssignmentCode(assignmentCode);
         if (existingAssignment == null) {
-            throw new EntityNotFoundException("Assignment not found with code: " + assignmentCode);
+            throw new RuntimeException("Assignment not found with code: " + assignmentCode);
         }
 
         // Update the assignment fields
@@ -102,7 +101,7 @@ public class TaskAssignmentServiceImpl implements TaskAssignmentService {
         if (existingAssignment != null){
             assignmentRepository.deleteByAssignmentCode(assignmentCode);
         } else {
-            throw new EntityNotFoundException("Assignment not found with code: " + assignmentCode);
+            throw new RuntimeException("Assignment not found with code: " + assignmentCode);
         }
     }
 
