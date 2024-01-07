@@ -94,15 +94,6 @@ public class TeamServiceImpl implements TeamService {
         return newTeam;
     }
 
-    // Helper method to get random members from the list based on the count
-    private List<Member> getRandomMembers(List<Member> members, int count) {
-        Collections.shuffle(members); // Shuffle the list of members
-
-        return members.stream()
-                .limit(count)
-                .collect(Collectors.toList());
-    }
-
     @Override
     public List<TeamOnlyResponse> getAllTeams() {
         List<Team> teams = teamRepository.findAll();
@@ -141,46 +132,6 @@ public class TeamServiceImpl implements TeamService {
         }
     }
 
-    @Override
-    @Transactional
-    public void assignMembersToTeam(String teamNumber, List<MemberRequest> memberRequests) {
-        // Find the team by teamNumber
-        Team team = teamRepository.findByTeamNumber(teamNumber);
-        if (team == null) {
-            throw new EntityNotFoundException("Team", "Team with number " + teamNumber + " not found");
-        }
-
-        // Iterate over member requests and associate them with the team
-        for (MemberRequest memberRequest : memberRequests) {
-            // Find the department by name
-            Department department = departmentRepository.findByName(memberRequest.getDepName());
-            if (department == null) {
-                throw new EntityNotFoundException("Department", "Department with name " + memberRequest.getDepName() + " not found");
-            }
-
-            // Find the existing members from the database
-            List<Member> existingMembers = memberRepository.findByrNumberAndDepartment(memberRequest.getRNumber(), department);
-
-            if (existingMembers.isEmpty()) {
-                throw new EntityNotFoundException("Member", "Member with RNumber " + memberRequest.getRNumber() + " not found in department " + department.getName());
-            }
-
-            if (existingMembers.size() > 1) {
-                throw new IllegalStateException("Multiple members found with RNumber " + memberRequest.getRNumber() + " in department " + department.getName());
-            }
-
-            Member existingMember = existingMembers.get(0);
-
-            // Associate the existing member with the team
-            existingMember.setTeam(team);
-
-            // Add the member to the team
-            team.getMembers().add(existingMember);
-        }
-
-        // Save the updated team
-        teamRepository.save(team);
-    }
 
     @Override
     public void addMembersToTeam(Long teamId, List<MemberToTeamRequest> memberToTeamRequest) {
@@ -207,28 +158,4 @@ public class TeamServiceImpl implements TeamService {
         // save changes
         teamRepository.save(team);
     }
-
-    private String getRandomTeacherName() {
-        // Use Random to select a random index from the teacherNames list
-        Random random = new Random();
-        int randomIndex = random.nextInt(teacherNames.size());
-        return teacherNames.get(randomIndex);
-    }
-
-//    private void sendTeamAddedEmail(MemberRequest memberRequest) {
-//        // Create a MailDto with user information
-//        MailDto mailDto = MailDto.builder()
-//                .recipient(memberRequest.getEmail())
-//                .messageSubject("Assigned to team")
-//                .messageBody("Dear " + memberRequest.getFirstName() + ",\nYou are added to a team")
-//                .build();
-//
-//        // Send the email using WebClient to the mail-service
-//        webClient.post()
-//                .uri("http://" + emailServiceBaseUrl + "/api/email/send-email")
-//                .bodyValue(mailDto)
-//                .retrieve()
-//                .toBodilessEntity()
-//                .block();
-//    }
 }

@@ -13,7 +13,6 @@ public interface TeamService {
     TeamResponse findTeamByNumber(String teamNumber);
     void updateTeam(String teamNumber, TeamRequest teamRequest);
     void deleteTeamByNumber(String teamNumber);
-    void assignMembersToTeam(String teamNumber, List<MemberRequest> memberRequests);
     void addMembersToTeam(Long teamId, List<MemberToTeamRequest> memberToTeamRequest);
 
 

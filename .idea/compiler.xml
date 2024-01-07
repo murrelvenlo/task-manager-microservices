@@ -10,11 +10,13 @@
         <module name="api-gateway" />
         <module name="task-service" />
         <module name="team-service" />
+        <module name="assignment-service" />
         <module name="email-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="api-gateway" target="17" />
+      <module name="assignment-service" target="17" />
       <module name="email-service" target="17" />
       <module name="task-service" target="17" />
       <module name="team-service" target="17" />
@@ -24,6 +26,7 @@
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="api-gateway" options="-parameters" />
+      <module name="assignment-service" options="-parameters" />
       <module name="email-service" options="-parameters" />
       <module name="task-service" options="-parameters" />
       <module name="team-service" options="-parameters" />
