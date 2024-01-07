@@ -16,7 +16,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/team")
+@RequestMapping("/api/teams")
 @RequiredArgsConstructor
 public class TeamController {
 

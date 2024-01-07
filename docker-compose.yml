@@ -90,16 +90,19 @@ services:
     depends_on:
       - team-service
       - task-service
+      - assignment-service
     image: venlomj/api-gateway
     ports:
       - "8083:8083"
     links:
       - team-service
       - task-service
+      - assignment-service
     restart: on-failure
     environment:
       TEAM_SERVICE_BASEURL: team-service:8081
       TASK_SERVICE_BASEURL: task-service:8080
+      ASSIGNMENT_SERVICE_BASEURL: assignment-service:8084
 
 volumes:
   mongo_task_data:
