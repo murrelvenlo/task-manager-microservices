@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AssignmentResponse {
-    private Long id;
+    private String id;
     private String assignmentCode;
     private String taskCode;
     private String rNumber;

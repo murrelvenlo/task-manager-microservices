@@ -1,23 +1,22 @@
 package fact.it.assignmentservice.model;
-
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "task_assignments")
+
+@Document(collection = "taskAssignments")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Data
 public class TaskAssignment {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
     private String assignmentCode;
     private String taskCode;
     private String rNumber;

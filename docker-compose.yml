@@ -28,8 +28,11 @@ services:
     restart: unless-stopped
     volumes:
       - postgres_assignment_data:/data/postgres
+    expose:
+      - "5431"
     ports:
-      - "5433:5432"
+      - "5431:5431"
+    command: -p 5431
     environment:
       POSTGRES_USER: venlomj
       POSTGRES_PASSWORD: 1234
@@ -41,10 +44,11 @@ services:
       - task-service
       - email-service
       - team-service
-    image: venlomj/task-assignment-service
+    image: venlomj/assignment-service
     ports:
       - "8084:8084"
     environment:
+      environment:
       TEAM_SERVICE_BASEURL: team-service:8081
       TASK_SERVICE_BASEURL: task-service:8080
       EMAIL_SERVICE_BASEURL: email-service:8082
