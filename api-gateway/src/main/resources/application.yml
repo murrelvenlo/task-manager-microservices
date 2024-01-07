@@ -33,7 +33,7 @@ spring:
         - id: task-service-get
           uri: http://${TASK_SERVICE_BASEURL:localhost:8080}
           predicates:
-            - Path=/api/tasks/get/{taskCode}
+            - Path=/api/tasks/get/**
             - Method=GET
         - id: task-service-create
           uri: http://${TASK_SERVICE_BASEURL:localhost:8080}
@@ -43,12 +43,12 @@ spring:
         - id: task-service-update
           uri: http://${TASK_SERVICE_BASEURL:localhost:8080}
           predicates:
-            - Path=/api/tasks/update/{taskCode}
+            - Path=/api/tasks/update/**
             - Method=PUT
         - id: task-service-delete
           uri: http://${TASK_SERVICE_BASEURL:localhost:8080}
           predicates:
-            - Path=/api/tasks/delete/{taskCode}
+            - Path=/api/tasks/delete/**
             - Method=DELETE
         - id: department-service-all
           uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
@@ -63,7 +63,7 @@ spring:
         - id: department-service-get
           uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
           predicates:
-            - Path=/api/dep/get/{depCode}
+            - Path=/api/dep/get/**
             - Method=GET
         - id: member-service-all
           uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
@@ -78,22 +78,22 @@ spring:
         - id: member-service-get
           uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
           predicates:
-            - Path=/api/members/get/{rNumber}
+            - Path=/api/members/get/**
             - Method=GET
         - id: member-service-update
           uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
           predicates:
-            - Path=/api/members/update/{rNumber}
+            - Path=/api/members/update/**
             - Method=PUT
         - id: member-service-delete
           uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
           predicates:
-            - Path=/api/members/delete/{rNumber}
+            - Path=/api/members/delete/**
             - Method=DELETE
         - id: member-service-to-team
           uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
           predicates:
-            - Path=/api/members/addMemberToTeam/{teamNumber}
+            - Path=/api/members/addMemberToTeam/**
             - Method=POST
         - id: member-service-team-remove
           uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
@@ -113,17 +113,17 @@ spring:
         - id: member-team-get
           uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
           predicates:
-            - Path=/api/teams/get/{teamNumber}
+            - Path=/api/teams/get/**
             - Method=GET
         - id: member-team-update
           uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
           predicates:
-            - Path=/api/teams/update/{teamNumber}
+            - Path=/api/teams/update/**
             - Method=PUT
         - id: member-team-delete
           uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
           predicates:
-            - Path=/api/teams/delete/{teamNumber}
+            - Path=/api/teams/delete/**
             - Method=DELETE
         - id: assignment-service
           uri: http://${ASSIGNMENT_SERVICE_BASEURL:localhost:8084}
@@ -143,11 +143,11 @@ spring:
         - id: assignment-service-update
           uri: http://${ASSIGNMENT_SERVICE_BASEURL:localhost:8084}
           predicates:
-            - Path=/api/assignments/update/{assignmentCode}
+            - Path=/api/assignments/update/**
             - Method=GET
         - id: assignment-service-delete
           uri: http://${ASSIGNMENT_SERVICE_BASEURL:localhost:8084}
           predicates:
-            - Path=/api/assignments/delete/{assignmentCode}
+            - Path=/api/assignments/delete/**
             - Method=GET
 

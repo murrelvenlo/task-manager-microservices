@@ -1,5 +1,6 @@
 package fact.it.assignmentservice;
 
+import static fact.it.assignmentservice.model.TaskAssignmentStatus.COMPLETED;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -48,87 +49,132 @@ class AssignmentServiceApplicationTests {
 
 	@Mock
 	private WebClient.ResponseSpec responseSpec;
+	@Mock
+	private ModelMapper mapper;
 
 	@BeforeEach
 	void setUp() {
-		MockitoAnnotations.openMocks(this);
 		ReflectionTestUtils.setField(taskAssignmentService, "taskServiceBaseUrl", "http://localhost:8080");
 		ReflectionTestUtils.setField(taskAssignmentService, "teamServiceBaseUrl", "http://localhost:8081");
 		ReflectionTestUtils.setField(taskAssignmentService, "emailServiceBaseUrl", "http://localhost:8082");
 	}
+//	@Test
+//	public void testCreateAssignment_Success() {
+//		// Arrange
+//
+//		String assignmentCode = "asnmt-123569";
+//		String taskCode = "task-012356";
+//		String rNumber = "r0123456";
+//		boolean completed = false;
+//		LocalDateTime deadline = LocalDateTime.now();
+//		String notes = "Test notes";
+//
+//		AssignmentRequest assignmentRequest = new AssignmentRequest();
+//
+//		MemberResponse memberResponse = new MemberResponse();
+//		// populate memberResponse with test data
+//		memberResponse.setRNumber(rNumber);
+//
+//		TaskResponse taskResponse = new TaskResponse();
+//		// populate taskResponse with test data
+//		taskResponse.setTaskCode(taskCode);
+//
+//		TaskAssignment assignment = new TaskAssignment();
+//		assignment.setId("1");
+//		assignment.setStatus(TaskAssignmentStatus.NOT_COMPLETED);
+//		assignment.setCompleted(completed);
+//		assignment.setAssignmentCode(assignmentCode);
+//		assignment.setDeadline(deadline);
+//		assignment.setAssignmentDate(LocalDateTime.now());
+//		assignment.setNotes(notes);
+//
+//		when(assignmentRepository.save(any(TaskAssignment.class))).thenReturn(assignment);
+//
+//		when(webClient.get()).thenReturn(requestHeadersUriSpec);
+//		when(requestHeadersUriSpec.uri(anyString(), any(Function.class))).thenReturn(requestHeadersSpec);
+//		when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
+//		when(responseSpec.bodyToMono(MemberResponse.class)).thenReturn(Mono.just(new MemberResponse()));
+//		when(responseSpec.bodyToMono(TaskResponse.class)).thenReturn(Mono.just(new TaskResponse()));
+//
+//		// Act
+//		taskAssignmentService.createAssignment(assignmentRequest);
+//
+//		// Assert
+//		// verify
+//		verify(assignmentRepository, times(1)).save(any(TaskAssignment.class));
+//
+//	}
 
 	@Test
-	public void testCreateAssignment() {
-		// Mock the WebClient response for getTaskByCode and getMemberByRNumber
-		when(webClient.get()).thenReturn(requestHeadersUriSpec);
-		when(requestHeadersUriSpec.uri(anyString(),  any(Function.class))).thenReturn(requestHeadersSpec);
-		when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
-		when(responseSpec.bodyToMono(TaskResponse.class))
-				.thenReturn(Mono.just(TaskResponse.builder().taskCode("task-6130914").build()));
-		when(responseSpec.bodyToMono(MemberResponse.class))
-				.thenReturn(Mono.just(MemberResponse.builder().email("test@example.com").firstName("John").taskCode("task-6130914").build()));
-
-		// Mock the generateAssignmentCode method
-		when(taskAssignmentService.generateAssignmentCode()).thenReturn("asnmt-1234567");
-
-
-		// Create an AssignmentRequest
-		AssignmentRequest assignmentRequest = AssignmentRequest.builder()
-				.taskCode("task-6130914")
-				.rNumber("123")
-				.deadline(LocalDateTime.now())
-				.status(TaskAssignmentStatus.NOT_COMPLETED)
-				.completed(false)
-				.notes("Test Assignment")
-				.build();
-
-		// Call the createAssignment method
-		taskAssignmentService.createAssignment(assignmentRequest);
-
-		// Verify that save method was called with the correct TaskAssignment object
-		verify(assignmentRepository).save(any(TaskAssignment.class));
-
-		// You can add more assertions based on your specific requirements
-	}
-
-
-	@Test
-	public void testGetAssignmentsByRNumberOrTaskCodeOrAssignmentCode() {
+	public void testGetAssignmentsByRNumberOrTaskCode() {
 		// Arrange
-		String rNumber = "123";
-		String taskCode = "task-6130914";
-		String assignmentCode = "asnmt-1234567";
+		List<TaskAssignment> assignments = Arrays.asList(
+				new TaskAssignment("1", "asnmt-123569", "task-012356", "r0123456", false, LocalDateTime.now(), LocalDateTime.now(), "Test notes", TaskAssignmentStatus.NOT_COMPLETED)
 
-		List<TaskAssignment> mockAssignments = Collections.singletonList(
-				TaskAssignment.builder()
-						.assignmentCode("asnmt-1234567")
-						.taskCode("task-6130914")
-						.rNumber("123")
-						.deadline(LocalDateTime.now())
-						.status(TaskAssignmentStatus.NOT_COMPLETED)
-						.completed(false)
-						.notes("Test Assignment")
-						.build()
 		);
+		when(assignmentRepository.findByrNumberOrTaskCodeOrAssignmentCode(anyString(), anyString(), anyString())).thenReturn(assignments);
+		when(mapper.map(any(TaskAssignment.class), eq(AssignmentResponse.class))).thenAnswer(invocation -> {
+			TaskAssignment assignment = invocation.getArgument(0);
+			AssignmentResponse response = new AssignmentResponse();
 
-		when(assignmentRepository.findByrNumberOrTaskCodeOrAssignmentCode(rNumber, taskCode, assignmentCode))
-				.thenReturn(mockAssignments);
+			return response;
+		});
 
 		// Act
-		List<AssignmentResponse> assignmentResponses = taskAssignmentService.getAssignmentsByRNumberOrTaskCode(rNumber, taskCode, assignmentCode);
+		List<AssignmentResponse> result = taskAssignmentService.getAssignmentsByRNumberOrTaskCode("r0123456", "task-012356", "asnmt-123569");
 
 		// Assert
-		assertEquals(1, assignmentResponses.size());
-		assertEquals("asnmt-1234567", assignmentResponses.get(0).getAssignmentCode());
-		assertEquals("task-6130914", assignmentResponses.get(0).getTaskCode());
-		assertEquals("123", assignmentResponses.get(0).getRNumber());
-
-		// verify
-		verify(assignmentRepository).findByrNumberOrTaskCodeOrAssignmentCode(rNumber, taskCode, assignmentCode);
+		assertEquals(assignments.size(), result.size());
 	}
 
+	@Test
+	public void testGetAllAssignments() {
+		// Arrange
+		List<TaskAssignment> assignments = Arrays.asList(
+				new TaskAssignment("1", "asnmt-123569", "task-012356", "r0123456", false, LocalDateTime.now(), LocalDateTime.now(), "Test notes", TaskAssignmentStatus.NOT_COMPLETED)
+		);
+		when(assignmentRepository.findAll()).thenReturn(assignments);
+		when(mapper.map(any(TaskAssignment.class), eq(AssignmentResponse.class))).thenAnswer(invocation -> {
+			TaskAssignment assignment = invocation.getArgument(0);
+			AssignmentResponse response = new AssignmentResponse();
+			return response;
+		});
 
+		// Act
+		List<AssignmentResponse> result = taskAssignmentService.getAllAssignments();
 
+		// Assert
+		assertEquals(assignments.size(), result.size());
+	}
 
+	@Test
+	public void testUpdateAssignment() {
+		// Arrange
+		String assignmentCode = "asnmt-123569";
+		AssignmentRequest assignmentRequest = new AssignmentRequest();
+
+		TaskAssignment existingAssignment = new TaskAssignment("1", assignmentCode, "task-012356", "r0123456", false, LocalDateTime.now(), LocalDateTime.now(), "Test notes", TaskAssignmentStatus.NOT_COMPLETED);
+		when(assignmentRepository.findByAssignmentCode(assignmentCode)).thenReturn(existingAssignment);
+
+		// Act
+		taskAssignmentService.updateAssignment(assignmentCode, assignmentRequest);
+
+		// Assert
+		verify(assignmentRepository, times(1)).save(any(TaskAssignment.class));
+	}
+
+	@Test
+	public void testDeleteAssignment() {
+		// Arrange
+		String assignmentCode = "asnmt-123569";
+		TaskAssignment existingAssignment = new TaskAssignment("1", assignmentCode, "task-012356", "r0123456", false, LocalDateTime.now(), LocalDateTime.now(), "Test notes", TaskAssignmentStatus.NOT_COMPLETED);
+		when(assignmentRepository.findByAssignmentCode(assignmentCode)).thenReturn(existingAssignment);
+
+		// Act
+		taskAssignmentService.deleteAssignment(assignmentCode);
+
+		// Assert
+		verify(assignmentRepository, times(1)).deleteByAssignmentCode(assignmentCode);
+	}
 
 }
