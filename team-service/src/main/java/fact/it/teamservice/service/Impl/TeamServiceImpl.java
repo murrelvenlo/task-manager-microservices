@@ -34,32 +34,32 @@ public class TeamServiceImpl implements TeamService {
     private final ModelMapper modelMapper;
     private final WebClient webClient;
 
-    @PostConstruct
-    public void loadData() {
-        if (teamRepository.count() <= 0) {
-            Team team = Team.builder()
-                    .name("Team 1")
-                    .teamNumber("team-0123456789")
-                    .members(new ArrayList<>())
-                    .build();
-
-            Team team1 = Team.builder()
-                    .name("Team 2")
-                    .teamNumber("team-1234567860")
-                    .members(new ArrayList<>())
-                    .build();
-
-            Team team2 = Team.builder()
-                    .name("Team 3")
-                    .teamNumber("team-5123406789")
-                    .members(new ArrayList<>())
-                    .build();
-
-            teamRepository.save(team);
-            teamRepository.save(team1);
-            teamRepository.save(team2);
-        }
-    }
+//    @PostConstruct
+//    public void loadData() {
+//        if (teamRepository.count() <= 0) {
+//            Team team = Team.builder()
+//                    .name("Team 1")
+//                    .teamNumber("team-0123456789")
+//                    .members(new ArrayList<>())
+//                    .build();
+//
+//            Team team1 = Team.builder()
+//                    .name("Team 2")
+//                    .teamNumber("team-1234567860")
+//                    .members(new ArrayList<>())
+//                    .build();
+//
+//            Team team2 = Team.builder()
+//                    .name("Team 3")
+//                    .teamNumber("team-5123406789")
+//                    .members(new ArrayList<>())
+//                    .build();
+//
+//            teamRepository.save(team);
+//            teamRepository.save(team1);
+//            teamRepository.save(team2);
+//        }
+//    }
 
 
     private final TeamRepository teamRepository;

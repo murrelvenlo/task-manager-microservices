@@ -35,7 +35,9 @@ public class TaskAssignmentController {
 
     @GetMapping("/get/all")
     public List<AssignmentResponse> getAllAssignments() {
-        return assignmentService.getAllAssignments();
+        var allAssignments = assignmentService.getAllAssignments();
+        System.out.println("All TaskAssignments: " + allAssignments);
+        return allAssignments;
     }
 
     @GetMapping("/get/rNumberOrTaskCodeOrAssigmentCode")

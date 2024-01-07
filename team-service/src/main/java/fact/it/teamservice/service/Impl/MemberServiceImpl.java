@@ -37,48 +37,6 @@ public class MemberServiceImpl implements MemberService {
     private final WebClient webClient;
     @Value("${emailservice.baseurl}")
     private String emailServiceBaseUrl;
-
-    @PostConstruct
-    public void loadData() {
-        if (memberRepository.count() <= 0) {
-            Member member = Member.builder()
-                    .rNumber("r0781309")
-                    .firstName("Murrel")
-                    .lastName("Venlo")
-                    .email("venlo.mj@hotmail.nl")
-                    .department(new Department())
-                    .taskCode("task-123456")
-                    .team(new Team())
-                    .build();
-
-            Member member1 = Member.builder()
-                    .rNumber("r0781309")
-                    .firstName("Murrel")
-                    .lastName("Venlo")
-                    .email("venlo.mj@hotmail.nl")
-                    .department(new Department())
-                    .taskCode("task-0114738")
-                    .team(new Team())
-                    .build();
-
-            Member member2 = Member.builder()
-                    .rNumber("r0123456")
-                    .firstName("Jurmen")
-                    .lastName("Prijor")
-                    .email("venlo.mj@hotmail.nl")
-                    .department(new Department())
-                    .taskCode("task-0246139")
-                    .team(new Team())
-                    .build();
-
-            memberRepository.save(member);
-            sendTestEmail(member);
-            memberRepository.save(member1);
-            sendTestEmail(member1);
-            memberRepository.save(member2);
-            sendTestEmail(member2);
-        }
-    }
     @Override
     public Member addMember(MemberRequest memberRequest) {
         // Check if the department name is provided

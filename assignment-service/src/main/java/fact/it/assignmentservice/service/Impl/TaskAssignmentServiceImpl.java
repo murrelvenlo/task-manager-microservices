@@ -2,8 +2,10 @@ package fact.it.assignmentservice.service.Impl;
 
 import fact.it.assignmentservice.dto.*;
 import fact.it.assignmentservice.model.TaskAssignment;
+import fact.it.assignmentservice.model.TaskAssignmentStatus;
 import fact.it.assignmentservice.repository.TaskAssignmentRepository;
 import fact.it.assignmentservice.service.TaskAssignmentService;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -28,6 +31,39 @@ public class TaskAssignmentServiceImpl implements TaskAssignmentService {
     private final TaskAssignmentRepository assignmentRepository;
     private final ModelMapper mapper;
     private final WebClient webClient;
+
+    @PostConstruct
+    public void loadData() {
+        if (assignmentRepository.count() <= 0) {
+            TaskAssignment assignment = TaskAssignment.builder()
+                    .assignmentCode("asnmt-0123456")
+                    .notes("Sample notes for assignment")
+                    .status(TaskAssignmentStatus.PENDING)
+                    .assignmentDate(LocalDateTime.now())
+                    .deadline(LocalDateTime.now())
+                    .build();
+
+            TaskAssignment assignment1 = TaskAssignment.builder()
+                    .assignmentCode("asnmt-1234567")
+                    .notes("Sample notes for assignment 2")
+                    .status(TaskAssignmentStatus.COMPLETED)
+                    .assignmentDate(LocalDateTime.now())
+                    .deadline(LocalDateTime.now())
+                    .build();
+
+            TaskAssignment assignment2 = TaskAssignment.builder()
+                    .assignmentCode("asnmt-2345678")
+                    .notes("Sample notes for assignment 3")
+                    .status(TaskAssignmentStatus.NOT_COMPLETED)
+                    .assignmentDate(LocalDateTime.now())
+                    .deadline(LocalDateTime.now())
+                    .build();
+
+            assignmentRepository.save(assignment);
+            assignmentRepository.save(assignment1);
+            assignmentRepository.save(assignment2);
+        }
+    }
 
     @Override
     public void createAssignment(AssignmentRequest assignmentRequest) {
