@@ -11,8 +11,9 @@ public interface TeamService {
     Team createTeam(TeamRequest teamRequest);
     List<TeamOnlyResponse> getAllTeams();
     TeamResponse findTeamByNumber(String teamNumber);
-    void updateTeam(String teamNumber, TeamRequest teamRequest);
+    void updateTeam(String teamNumber, UpdateTeamRequest teamRequest);
     void deleteTeamByNumber(String teamNumber);
+    void deleteTeam(Long teamId);
     void addMembersToTeam(Long teamId, List<MemberToTeamRequest> memberToTeamRequest);
 
 

@@ -73,8 +73,18 @@ public class TeamController {
     }
 
     @PutMapping("/update/{teamNumber}")
-    public void updateTeam(@PathVariable String teamNumber, @RequestBody TeamRequest teamRequest) {
+    public void updateTeam(@PathVariable String teamNumber, @RequestBody UpdateTeamRequest  teamRequest) {
         teamService.updateTeam(teamNumber, teamRequest);
+    }
+
+    @DeleteMapping("/deleteBy/{teamId}")
+    public ResponseEntity<String> deleteTeamById(@PathVariable Long teamId) {
+        try {
+            teamService.deleteTeam(teamId);
+            return new ResponseEntity<>("Team deleted successfully", HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 
     @DeleteMapping("/delete/{teamNumber}")

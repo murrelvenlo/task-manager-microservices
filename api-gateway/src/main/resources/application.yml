@@ -123,7 +123,7 @@ spring:
         - id: member-team-delete
           uri: http://${TEAM_SERVICE_BASEURL:localhost:8081}
           predicates:
-            - Path=/api/teams/delete/**
+            - Path=/api/teams/deleteBy/**
             - Method=DELETE
         - id: assignment-service
           uri: http://${ASSIGNMENT_SERVICE_BASEURL:localhost:8084}

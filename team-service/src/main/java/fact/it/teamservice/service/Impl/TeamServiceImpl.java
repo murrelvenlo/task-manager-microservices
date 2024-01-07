@@ -34,33 +34,6 @@ public class TeamServiceImpl implements TeamService {
     private final ModelMapper modelMapper;
     private final WebClient webClient;
 
-//    @PostConstruct
-//    public void loadData() {
-//        if (teamRepository.count() <= 0) {
-//            Team team = Team.builder()
-//                    .name("Team 1")
-//                    .teamNumber("team-0123456789")
-//                    .members(new ArrayList<>())
-//                    .build();
-//
-//            Team team1 = Team.builder()
-//                    .name("Team 2")
-//                    .teamNumber("team-1234567860")
-//                    .members(new ArrayList<>())
-//                    .build();
-//
-//            Team team2 = Team.builder()
-//                    .name("Team 3")
-//                    .teamNumber("team-5123406789")
-//                    .members(new ArrayList<>())
-//                    .build();
-//
-//            teamRepository.save(team);
-//            teamRepository.save(team1);
-//            teamRepository.save(team2);
-//        }
-//    }
-
 
     private final TeamRepository teamRepository;
     private final DepartmentRepository departmentRepository;
@@ -108,7 +81,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public void updateTeam(String teamNumber, TeamRequest teamRequest) {
+    public void updateTeam(String teamNumber, UpdateTeamRequest teamRequest) {
         Team team = teamRepository.findByTeamNumber(teamNumber);
         if (team != null) {
             // Use ModelMapper to map properties from TeamRequest to Team
@@ -129,6 +102,15 @@ public class TeamServiceImpl implements TeamService {
         } else {
             // Handle the case where the team is not found
             throw new RuntimeException("Team with teamNumber " + teamNumber + " not found");
+        }
+    }
+    @Override
+    public void deleteTeam(Long teamId) {
+        Optional<Team> teamOptional = teamRepository.findById(teamId);
+        if (teamOptional.isPresent()){
+            teamRepository.deleteById(teamId);
+        } else {
+            throw new RuntimeException("Team not found with task id: " + teamId);
         }
     }
 
