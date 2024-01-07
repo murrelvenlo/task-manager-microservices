@@ -18,10 +18,7 @@ public class SecurityConfig {
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         return http
                 .authorizeExchange(exchange -> exchange
-                        .pathMatchers(HttpMethod.GET, "/api/members/get/all").permitAll()
-                        .pathMatchers(HttpMethod.POST, "/api/members/add").permitAll()
-                        .pathMatchers(HttpMethod.GET, "/api/teams/get/all").permitAll()
-                        .pathMatchers(HttpMethod.GET, "/api/tasks/get/all").permitAll()
+                        .pathMatchers("/api/members/get/all", "/api/members/add", "/api/teams/get/all", "/api/tasks/get/all").permitAll()
                         .anyExchange().authenticated())
                 .oauth2ResourceServer(oauth -> oauth.jwt(withDefaults()))
                 .build();
