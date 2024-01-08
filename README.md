@@ -89,47 +89,87 @@ Unit tests voor het correct routeren van aanroepen en authenticatie via OAuth2
  
 
 youtube: https://studio.youtube.com/video/sezySsuXZPE/edit
+
 github: https://github.com/murrelvenlo/tasks-microservices
 
-github Actions:
+GitHub Actions:
 
+![gha1.png](..%2Fverslag%2Fimages-request%2Fgha1.png)
  
- 
- 
- 
+![gha2.png](..%2Fverslag%2Fimages-request%2Fgha2.png)
 
+![gha3.png](..%2Fverslag%2Fimages-request%2Fgha3.png)
+
+![gha4.png](..%2Fverslag%2Fimages-request%2Fgha4.png)
 
 Requests
 
 Create task:
- 
+
+![Alt Text](../../Project/verslag/images-request/create-task.png)
 
 Get all tasks:
- 
+
+![Alt Text](../../Project/verslag/images-request/get-all-tasks.png)
 
 Get task by taskCode:
- 
+
+![Alt Text](../../Project/verslag/images-request/get%20task%20by%20code.png)
+
+
 
 Update task:
 
- 
+![Alt Text](../../Project/verslag/images-request/update%20task.png)
+
+
 
 Delete task:
+
+![Alt Text](../../Project/verslag/images-request/delete%20tasks.png)
 
  
 
 Create team:
 
+![Alt Text](../../Project/verslag/images-request/create%20team.png)
+
  
 
 Get all teams:
+
+![Alt Text](../../Project/verslag/images-request/get%20all%20team.png)
 
  
 
 Update team:
 
- 
+![Alt Text](../../Project/verslag/images-request/update%20team.png)
+
+Create member:
+
+![Alt Text](../../Project/verslag/images-request/create%20member.png)
+
+Get all member:
+
+![Alt Text](../../Project/verslag/images-request/get%20all%20members.png)
+
+
+Update member:
+
+![Alt Text](../../Project/verslag/images-request/update%20member.png)
+
+Delete member:
+
+![delete-member.png](..%2Fverslag%2Fimages-request%2Fdelete-member.png)
+
+Get member by rNumber:
+
+![member-by-rnumber.png](..%2Fverslag%2Fimages-request%2Fmember-by-rnumber.png)
 
 Get all Assignments:
+
+![Alt Text](../../Project/verslag/images-request/get%20all%20assignments.png)
+
 
  
