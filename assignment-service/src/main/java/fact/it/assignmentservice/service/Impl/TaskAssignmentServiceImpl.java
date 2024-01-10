@@ -101,6 +101,24 @@ public class TaskAssignmentServiceImpl implements TaskAssignmentService {
     }
 
     @Override
+    public AssignmentResponse getAssignmentsByRNumber(String rNumber) {
+        TaskAssignment assignment = assignmentRepository.findByrNumber(rNumber);
+        return (assignment != null) ? mapper.map(assignment, AssignmentResponse.class) : null;
+    }
+
+    @Override
+    public AssignmentResponse getAssignmentsByTaskCode(String taskCode) {
+        TaskAssignment assignment = assignmentRepository.findByTaskCode(taskCode);
+        return (assignment != null) ? mapper.map(assignment, AssignmentResponse.class) : null;
+    }
+
+    @Override
+    public AssignmentResponse getAssignmentByCode(String assignmentCode) {
+        TaskAssignment assignment = assignmentRepository.findByAssignmentCode(assignmentCode);
+        return (assignment != null) ? mapper.map(assignment, AssignmentResponse.class) : null;
+    }
+
+    @Override
     public List<AssignmentResponse> getAllAssignments() {
         List<TaskAssignment> assignments = assignmentRepository.findAll();
         return assignments.stream()
@@ -190,5 +208,11 @@ public class TaskAssignmentServiceImpl implements TaskAssignmentService {
                 .retrieve()
                 .toBodilessEntity()
                 .block();
+    }
+
+    private List<AssignmentResponse> mapAssignmentsToResponse(List<TaskAssignment> assignments) {
+        return assignments.stream()
+                .map(assignment -> mapper.map(assignment, AssignmentResponse.class))
+                .collect(Collectors.toList());
     }
 }

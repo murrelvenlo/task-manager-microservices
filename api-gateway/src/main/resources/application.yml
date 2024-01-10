@@ -138,16 +138,25 @@ spring:
         - id: assignment-service-get
           uri: http://${ASSIGNMENT_SERVICE_BASEURL:localhost:8084}
           predicates:
-            - Path=/api/assignments/get/rNumberOrTaskCodeOrAssigmentCode
+            - Path=/api/assignments/getAssignmentByCode/{assignmentCode}
             - Method=GET
+        - id: assignment-service-get
+          uri: http://${ASSIGNMENT_SERVICE_BASEURL:localhost:8084}
+          predicates:
+            - Path=/api/assignments/getByTaskCode/{taskCode}
+            - Method=GET
+        - id: assignment-service-get
+          uri: http://${ASSIGNMENT_SERVICE_BASEURL:localhost:8084}
+          predicates:
+            - Path=/api/assignments/getByRNumber/{rNumber}
         - id: assignment-service-update
           uri: http://${ASSIGNMENT_SERVICE_BASEURL:localhost:8084}
           predicates:
-            - Path=/api/assignments/update/**
-            - Method=GET
+            - Path=/api/assignments/update/{assignmentCode}
+            - Method=PUT
         - id: assignment-service-delete
           uri: http://${ASSIGNMENT_SERVICE_BASEURL:localhost:8084}
           predicates:
-            - Path=/api/assignments/delete/**
-            - Method=GET
+            - Path=/api/assignments/delete/{assignmentCode}
+            - Method=DELETE
 

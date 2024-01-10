@@ -51,6 +51,40 @@ public class TaskAssignmentController {
 
         return ResponseEntity.ok(assignmentResponses);
     }
+    @GetMapping("/getByRNumber/{rNumber}")
+    public ResponseEntity<?> getAssignmentsByRNumber(@PathVariable String rNumber) {
+        AssignmentResponse response = assignmentService.getAssignmentsByRNumber(rNumber);
+
+        if (response != null) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Assignment with RNumber " + rNumber + " not found");
+        }
+    }
+
+    @GetMapping("/getByTaskCode/{taskCode}")
+    public ResponseEntity<?> getAssignmentsByTaskCode(@PathVariable String taskCode) {
+        AssignmentResponse response = assignmentService.getAssignmentsByTaskCode(taskCode);
+
+        if (response != null) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Assignment with TaskCode " + taskCode + " not found");
+        }
+    }
+
+    @GetMapping("/getAssignmentByCode/{assignmentCode}")
+    public ResponseEntity<?> getAssignmentByCode(@PathVariable String assignmentCode) {
+        AssignmentResponse response = assignmentService.getAssignmentByCode(assignmentCode);
+
+        if (response != null) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Assignment with AssignmentCode " + assignmentCode + " not found");
+        }
+    }
+
+
 
     @PutMapping("/update/{assignmentCode}")
     public ResponseEntity<String> updateAssigment(

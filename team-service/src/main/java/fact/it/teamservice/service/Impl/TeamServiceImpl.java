@@ -83,12 +83,12 @@ public class TeamServiceImpl implements TeamService {
     @Override
     public void updateTeam(String teamNumber, UpdateTeamRequest teamRequest) {
         Team team = teamRepository.findByTeamNumber(teamNumber);
+
         if (team != null) {
-            // Use ModelMapper to map properties from TeamRequest to Team
-            modelMapper.map(teamRequest, team);
+            team.setName(teamRequest.getName());
+
             teamRepository.save(team);
         } else {
-            // Handle the case where the team is not found
             throw new RuntimeException("Team with teamNumber " + teamNumber + " not found");
         }
     }
